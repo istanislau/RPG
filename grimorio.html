@@ -9,24 +9,9 @@
     
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "COLOQUE_AQUI_AS_SUAS_CREDENCIAIS_DO_FIREBASE",
-            authDomain: "o-teu-projeto.firebaseapp.com",
-            projectId: "o-teu-projeto",
-            storageBucket: "o-teu-projeto.appspot.com",
-            messagingSenderId: "00000000000",
-            appId: "1:000000000:web:00000"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-        const EMAIL_ADMIN_SUPREMO = "teu.email.admin@gmail.com";
+        import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { auth, db, provider, EMAIL_ADMIN_SUPREMO } from "./firebase-config.js";
 
         window.abrirModalLogin = function() { document.getElementById('modal-login').style.display = 'flex'; };
         window.fecharModalLogin = function() { document.getElementById('modal-login').style.display = 'none'; };
@@ -36,6 +21,8 @@
         onAuthStateChanged(auth, async (user) => {
             const userMenuArea = document.getElementById('user-menu-area');
             const linkPainelAdmin = document.getElementById('link-painel-admin');
+            const linkPersonagens = document.getElementById('link-personagens');
+
             if (user) {
                 let userRef = doc(db, "usuarios", user.uid);
                 let userSnap = await getDoc(userRef);
@@ -48,11 +35,19 @@
                 } else {
                     await setDoc(userRef, { email: user.email, papel: "jogador" });
                 }
-                userMenuArea.innerHTML = `<span>👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
-                if (papel === "admin" && linkPainelAdmin) linkPainelAdmin.style.display = 'inline-block';
+
+                userMenuArea.innerHTML = `<span style="color:#f4ecd0; font-weight:bold;">👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
+                
+                if (linkPersonagens) linkPersonagens.style.display = 'inline-block';
+                if (papel === "admin" && linkPainelAdmin) {
+                    linkPainelAdmin.style.display = 'inline-block';
+                } else if (linkPainelAdmin) {
+                    linkPainelAdmin.style.display = 'none';
+                }
             } else {
                 userMenuArea.innerHTML = `<button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em; background:#8b0000;">🔑 Logar</button>`;
                 if (linkPainelAdmin) linkPainelAdmin.style.display = 'none';
+                if (linkPersonagens) linkPersonagens.style.display = 'none';
             }
         });
     </script>
@@ -253,7 +248,7 @@
     <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🛡️ Ficha</a>
     <a href="grimorio.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">✨ Magias</a>
     <a href="historia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🗺️ História & Mapa</a>
-    <a href="personagens.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📜 Personagens</a>
+    <a href="personagens.html" id="link-personagens" style="display:none; background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📜 Personagens</a>
     <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">⚙️ Painel Admin</a>
     <div id="user-menu-area" style="display:inline-block; margin-left: 10px;">
         <button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em;">🔑 Logar</button>

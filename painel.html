@@ -9,22 +9,9 @@
     
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC8Km2yM4VC6O6yPYHjIfhAWPEo8F2UF8c",
-            authDomain: "rpgsnz-efd94.firebaseapp.com",
-            projectId: "rpgsnz-efd94",
-            storageBucket: "rpgsnz-efd94.firebasestorage.app",
-            messagingSenderId: "561917149839",
-            appId: "1:561917149839:web:c799a00fb91ad2da7ea6fa"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { collection, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { auth, db } from "./firebase-config.js";
 
         onAuthStateChanged(auth, async (user) => {
             const conteudoDiv = document.getElementById('conteudo-admin');

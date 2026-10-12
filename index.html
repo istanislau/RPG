@@ -9,24 +9,9 @@
     
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC8Km2yM4VC6O6yPYHjIfhAWPEo8F2UF8c",
-            authDomain: "rpgsnz-efd94.firebaseapp.com",
-            projectId: "rpgsnz-efd94",
-            storageBucket: "rpgsnz-efd94.firebasestorage.app",
-            messagingSenderId: "561917149839",
-            appId: "1:561917149839:web:c799a00fb91ad2da7ea6fa"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-        const EMAIL_ADMIN_SUPREMO = "teu.email.admin@gmail.com";
+        import { signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { auth, db, provider, EMAIL_ADMIN_SUPREMO } from "./firebase-config.js";
 
         window.abrirModalLogin = function() { document.getElementById('modal-login').style.display = 'flex'; };
         window.fecharModalLogin = function() { 
@@ -47,6 +32,7 @@
             const secaoCarrossel = document.getElementById('secao-carrossel');
             const trackCarrossel = document.getElementById('carrossel-track');
             const linkPainelAdmin = document.getElementById('link-painel-admin');
+            const linkPersonagens = document.getElementById('link-personagens');
 
             if (user) {
                 let userRef = doc(db, "usuarios", user.uid);
@@ -61,17 +47,13 @@
                     await setDoc(userRef, { email: user.email, papel: "jogador" });
                 }
 
-                userMenuArea.innerHTML = `<span>👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
+                userMenuArea.innerHTML = `<span style="color:#f4ecd0; font-weight:bold;">👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
                 
-                // Mostrar Painel se for Admin
-                if (papel === "admin" && linkPainelAdmin) {
-                    linkPainelAdmin.style.display = 'inline-block';
-                }
+                if (linkPersonagens) linkPersonagens.style.display = 'inline-block';
+                if (papel === "admin" && linkPainelAdmin) linkPainelAdmin.style.display = 'inline-block';
 
-                // Carregar fichas do utilizador para o carrossel
                 const q = query(collection(db, "fichas"), where("uid", "==", user.uid));
                 const querySnapshot = await getDocs(q);
-
                 if (!querySnapshot.empty) {
                     secaoCarrossel.style.display = 'block';
                     let htmlCards = "";
@@ -89,7 +71,8 @@
             } else {
                 userMenuArea.innerHTML = `<button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em; background:#8b0000;">🔑 Logar</button>`;
                 if (linkPainelAdmin) linkPainelAdmin.style.display = 'none';
-                secaoCarrossel.style.display = 'none';
+                if (linkPersonagens) linkPersonagens.style.display = 'none';
+                if (secaoCarrossel) secaoCarrossel.style.display = 'none';
 
                 if (!sessionStorage.getItem('popup_visto_index')) {
                     abrirModalLogin();
@@ -257,8 +240,9 @@
 </div>
 
 <!-- Menu Superior Global / Conta -->
+
 <div style="max-width: 900px; margin: 0 auto 15px auto; display: flex; justify-content: flex-end; align-items: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em;">
-    <a href="personagens.html" style="background:#7c5a3b; color:#f4ecd0; padding:4px 8px; border-radius:2px; text-decoration:none;">📜 Personagens</a>
+    <a href="personagens.html" id="link-personagens" style="display:none; background:#7c5a3b; color:#f4ecd0; padding:4px 8px; border-radius:2px; text-decoration:none;">📜 Personagens</a>
     <a href="painel.html" id="link-painel-admin" style="display:none; background:#8b0000; color:#fff; padding:4px 8px; border-radius:2px; text-decoration:none;">⚙️ Painel Admin</a>
     <div id="user-menu-area" style="display:inline-block;">
         <button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em;">🔑 Logar</button>

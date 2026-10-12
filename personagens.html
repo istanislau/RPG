@@ -9,27 +9,13 @@
     
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC8Km2yM4VC6O6yPYHjIfhAWPEo8F2UF8c",
-            authDomain: "rpgsnz-efd94.firebaseapp.com",
-            projectId: "rpgsnz-efd94",
-            storageBucket: "rpgsnz-efd94.firebasestorage.app",
-            messagingSenderId: "561917149839",
-            appId: "1:561917149839:web:c799a00fb91ad2da7ea6fa"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { auth, db } from "./firebase-config.js";
 
         onAuthStateChanged(auth, async (user) => {
             const listaDiv = document.getElementById('lista-personagens');
             if (user) {
-                // Verificar se é Mestre ou Admin
                 let userSnap = await getDoc(doc(db, "usuarios", user.uid));
                 let papel = userSnap.exists() ? userSnap.data().papel : "jogador";
 
@@ -44,7 +30,6 @@
 
                 querySnapshot.forEach((d) => {
                     let ficha = d.data();
-                    // Se for jogador comum, filtra apenas as suas fichas. Se for mestre/admin, vê todas.
                     if (papel === "jogador" && ficha.uid !== user.uid) {
                         return;
                     }
