@@ -10,7 +10,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { collection, getDocs, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { auth, db } from "./firebase-config.js";
 
         onAuthStateChanged(auth, async (user) => {
@@ -35,13 +35,20 @@
                     }
 
                     encontrou = true;
+                    // Guardamos os dados em formato seguro para passar por parâmetro no botão de backup individual
+                    let fichaJsonStr = encodeURIComponent(JSON.stringify(ficha));
+
                     html += `
-                        <div style="background:#fdfbf7; border:1px solid #b59b6c; padding:12px; border-radius:3px; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="background:#fdfbf7; border:1px solid #b59b6c; padding:12px; border-radius:3px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                             <div>
                                 <strong style="font-family:'Cinzel',serif; color:#8b0000; font-size:1.1em;">${ficha.nomeHeroi || 'Herói sem nome'}</strong><br>
                                 <span style="font-size:0.85em; color:#5c4033;">Criador: ${ficha.email || 'Desconhecido'} | Arquétipo: ${ficha.arquetipo || 'N/D'}</span>
                             </div>
-                            <button type="button" class="btn-acao" onclick="abrirFicha('${d.id}')">📂 Abrir Ficha</button>
+                            <div style="display:flex; gap:6px;">
+                                <button type="button" class="btn-acao" onclick="abrirFicha('${d.id}')">📂 Abrir</button>
+                                <button type="button" class="btn-acao" style="background:#7c5a3b;" onclick="baixarBackupIndividual(ográficas('${d.id}', decodeURIComponent('${fichaJsonStr}'))">💾 Backup</button>
+                                <button type="button" class="btn-acao" style="background:#8b0000;" onclick="deletarFichaLista('${d.id}')">🗑️ Excluir</button>
+                            </div>
                         </div>
                     `;
                 });
@@ -59,7 +66,64 @@
 
         window.abrirFicha = function(fichaId) {
             window.location.href = `ficha.html?id=${fichaId}`;
-        }
+        };
+
+        window.baixarBackupIndividual = function(id, dadosStr) {
+            let dados = JSON.parse(dadosStr);
+            let blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = `${(dados.nomeHeroi || 'heroi').replace(/[^a-z0-9]/gi, '_').toLowerCase()}_backup.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        window.deletarFichaLista = async function(fichaId) {
+            if (confirm("Tens a certeza absoluta que queres excluir esta ficha da nuvem?")) {
+                try {
+                    await deleteDoc(doc(db, "fichas", fichaId));
+                    alert("Ficha excluída com sucesso!");
+                    location.reload();
+                } catch (e) {
+                    console.error("Erro ao excluir ficha:", e);
+                    alert("Erro ao excluir a ficha.");
+                }
+            }
+        };
+
+        window.restaurarBackupJSON = async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Precisas de estar logado para restaurar uma ficha.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    let dadosRestaurados = JSON.parse(e.target.result);
+                    
+                    // Garante que a ficha restaurada pertence ao utilizador atual e atualiza a data
+                    dadosRestaurados.uid = user.uid;
+                    dadosRestaurados.email = user.email;
+                    dadosRestaurados.atualizadoEm = new Date();
+
+                    let novoId = user.uid + "_" + Date.now();
+                    await setDoc(doc(db, "fichas", novoId), dadosRestaurados);
+                    
+                    alert("Ficha restaurada com sucesso para a nuvem!");
+                    location.reload();
+                } catch (err) {
+                    console.error("Erro ao ler JSON:", err);
+                    alert("O ficheiro JSON selecionado é inválido.");
+                }
+            };
+            reader.readAsText(file);
+        };
     </script>
 
     <style>
@@ -133,15 +197,21 @@
 </div>
 
 <div class="container">
-    <div class="header">
-        <h1>Lista de Personagens</h1>
-    </div>
+        <div class="header">
+            <h1>Lista de Personagens</h1>
+        </div>
 
-    <div class="panel">
-        <h2 style="font-family:'Cinzel',serif; color:#4a2e18; font-size:1.1em; margin-top:0;">Heróis da Aventura</h2>
-        <div id="lista-personagens">A carregar os personagens...</div>
+        <div class="panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h2 style="font-family:'Cinzel',serif; color:#4a2e18; font-size:1.1em; margin:0;">Heróis da Aventura</h2>
+                <div>
+                    <input type="file" id="input-restaurar-json" accept=".json" style="display: none;" onchange="restaurarBackupJSON(event)">
+                    <button type="button" class="btn-acao" onclick="document.getElementById('input-restaurar-json').click()" style="background:#205493;">📂 Restaurar Backup (JSON)</button>
+                </div>
+            </div>
+            <div id="lista-personagens">A carregar os personagens...</div>
+        </div>
     </div>
-</div>
 
 </body>
 </html>
