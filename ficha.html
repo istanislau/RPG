@@ -118,8 +118,22 @@
                 console.error("Erro ao carregar ficha:", e);
             }
         };
-        // Função para descarregar o backup da ficha em formato JSON
+        // Função para descarregar o backup da ficha em formato JSON (com armas)
         window.baixarBackupFicha = function() {
+            // Recolher as armas da tabela
+            let armas = [];
+            document.querySelectorAll('#tabela-armas tbody tr').forEach(linha => {
+                let selectArma = linha.querySelector('select');
+                if (selectArma) {
+                    armas.push({
+                        tipo: selectArma.value,
+                        atributo: linha.querySelector('.td-attr') ? linha.querySelector('.td-attr').innerText : '',
+                        testeDano: linha.querySelector('.td-teste') ? linha.querySelector('.td-teste').innerText : '',
+                        efeito: linha.querySelector('.td-efeito') ? linha.querySelector('.td-efeito').innerText : ''
+                    });
+                }
+            });
+
             let dadosFicha = {
                 nomeHeroi: document.getElementById('nome-heroi').value || 'SemNome',
                 arquetipo: document.getElementById('arquetipo').value,
@@ -128,6 +142,7 @@
                 h: document.getElementById('attr-h').value,
                 r: document.getElementById('attr-r').value,
                 pvAtual: document.getElementById('res-pv-atual').value,
+                armas: armas,
                 notas: document.getElementById('notas-heroi').value
             };
 
@@ -615,8 +630,8 @@
             Restantes: 10
         </div>
         <div>
-            <button type="button" class="btn-pdf" onclick="salvarFichaNuvem()" style="background:#205493; margin-right:5px;">💾 Salvar</button>
-            <button type="button" class="btn-pdf" onclick="baixarBackupFicha()" style="background:#7c5a3b; margin-right:5px;" title="Descarregar cópia de segurança em ficheiro">💾 Backup</button>
+            <button type="button" class="btn-pdf" onclick="salvarFichaNuvem()" style="background:#205493; margin-right:5px;">💾 Salvar Nuvem</button>
+            <button type="button" class="btn-pdf" onclick="baixarBackupFicha()" style="background:#7c5a3b; margin-right:5px;" title="Descarregar cópia de segurança em ficheiro">💾 Backup JSON</button>
             <button type="button" class="btn-pdf" onclick="deletarFichaNuvem()" style="background:#8b0000; margin-right:5px;" title="Apagar ficha da nuvem">🗑️ Excluir</button>
             <button type="button" class="btn-pdf" onclick="gerarPDF()">📜 Gerar PDF</button>
         </div>
