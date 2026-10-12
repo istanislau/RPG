@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de Personagem - Khalmorya (3D&T)</title>
+    <!-- Fontes Medievais -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            background-color: #1a1007;
+            background-image: radial-gradient(#2b1b11, #0d0804);
+            color: #2c1810;
+            line-height: 1.4;
+            padding: 15px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #f4ecd0;
+            background-image: linear-gradient(to bottom, #f7f1df, #efe2c0);
+            padding: 25px;
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 50px rgba(139,69,19,0.15);
+            border: 6px solid #4a2e18;
+            outline: 2px solid #8c6d46;
+            outline-offset: -8px;
+            position: relative;
+            box-sizing: border-box;
+        }
+        /* Menu de Navegação Global (Oculto na Impressão) */
+        .global-nav {
+            max-width: 900px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85em;
+            flex-wrap: wrap;
+        }
+        .global-nav a {
+            background: #7c5a3b;
+            color: #f4ecd0;
+            padding: 6px 12px;
+            border-radius: 2px;
+            text-decoration: none;
+            border: 1px solid #b59b6c;
+            transition: background 0.2s;
+        }
+        .global-nav a:first-child {
+            background: #4a2e18;
+        }
+        .global-nav a:hover {
+            background: #8b0000;
+        }
+
+        /* Cabeçalho centralizado com brasão à esquerda */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            border-bottom: 3px double #7c5a3b;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .header img {
+            max-width: 85px;
+            filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4));
+        }
+        .header-text {
+            text-align: left;
+        }
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: #8b0000;
+            font-size: 1.8em;
+            margin: 0;
+            line-height: 1.1;
+        }
+        .subtitle {
+            font-family: 'Cinzel', serif;
+            color: #5c4033;
+            font-size: 0.9em;
+            letter-spacing: 2px;
+            margin-top: 3px;
+        }
+        
+        /* Barra de Ações do Topo */
+        .top-action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e2d2aa;
+            padding: 8px 12px;
+            border: 1px solid #b59b6c;
+            border-radius: 3px;
+            margin-bottom: 15px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85em;
+        }
+        .top-action-bar input {
+            width: 45px;
+            padding: 2px;
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            background: #fff;
+            border: 1px solid #7c5a3b;
+        }
+        .points-display {
+            font-weight: bold;
+            color: #8b0000;
+        }
+        .btn-pdf {
+            background: #8b0000;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+        }
+        .btn-pdf:hover {
+            background: #a00;
+        }
+
+        /* Blocos Estilo RPG */
+        .panel {
+            background: rgba(255, 253, 245, 0.6);
+            border: 1px solid #b59b6c;
+            padding: 12px 15px;
+            border-radius: 3px;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 15px rgba(181, 155, 108, 0.2);
+            box-sizing: border-box;
+        }
+        .panel h2 {
+            font-family: 'Cinzel', serif;
+            color: #4a2e18;
+            font-size: 1.05em;
+            border-bottom: 1px solid #b59b6c;
+            padding-bottom: 4px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        .grid-pericias {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 15px;
+        }
+
+        label {
+            display: block;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8em;
+            color: #4a2e18;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 6px 8px;
+            margin-bottom: 8px;
+            border: 1px solid #9c7c58;
+            border-radius: 2px;
+            background: #fdfbf7;
+            color: #2c1810;
+            font-family: 'Lora', serif;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Inputs de Atributos Compactos */
+        .attr-input {
+            width: 60px !important;
+            padding: 5px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .attr-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .attr-row label {
+            margin-bottom: 0;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: flex-start;
+            font-family: 'Lora', serif;
+            font-weight: normal;
+            font-size: 0.85em;
+            margin-bottom: 6px;
+        }
+        .checkbox-group label.disabled-label {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 6px;
+            margin-top: 3px;
+            transform: scale(1.05);
+            accent-color: #8b0000;
+        }
+        .desc {
+            font-size: 0.75em;
+            color: #554033;
+            margin-top: 2px;
+            display: block;
+            font-style: italic;
+        }
+
+        /* Recursos Estilizados */
+        .recursos {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            text-align: center;
+        }
+        .recurso-box {
+            flex: 1;
+            padding: 8px;
+            border-radius: 3px;
+            border: 1px solid rgba(0,0,0,0.15);
+        }
+        .recurso-pa { background: #faebd7; border-color: #d4af37; }
+        .recurso-pm { background: #e6f2ff; border-color: #4a90e2; }
+        .recurso-pv { background: #ffe6e6; border-color: #d9534f; }
+
+        .recurso-box span {
+            display: block;
+            font-size: 1.4em;
+            font-weight: bold;
+            font-family: 'Cinzel', serif;
+        }
+        .recurso-pa span { color: #b8860b; }
+        .recurso-pm span { color: #205493; }
+        .recurso-pv span { color: #a94442; }
+
+        .recurso-box small {
+            font-size: 0.65em;
+            color: #5c4033;
+            display: block;
+            margin-top: 2px;
+            line-height: 1.1;
+        }
+
+        .pv-flex {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 4px;
+        }
+        .pv-atual-input {
+            width: 50px !important;
+            padding: 3px;
+            text-align: center;
+            font-weight: bold;
+            font-family: 'Cinzel', serif;
+            color: #a94442;
+            background: #fff;
+            border: 1px solid #d9534f !important;
+            border-radius: 2px;
+            margin-bottom: 0 !important;
+        }
+
+        /* Tabela de Armas Dinâmica */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            background: #fdfbf7;
+        }
+        th, td {
+            border: 1px solid #b59b6c;
+            padding: 6px 8px;
+            text-align: left;
+            font-size: 0.85em;
+        }
+        th {
+            background-color: #7c5a3b;
+            color: #fff;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+        }
+        td select {
+            margin-bottom: 0;
+            padding: 4px;
+            font-size: 0.85em;
+        }
+        .btn-acao {
+            background: #8b0000;
+            color: #fff;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 0.75em;
+        }
+        .btn-acao:hover {
+            background: #a00;
+        }
+        .btn-adicionar {
+            background: #7c5a3b;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8em;
+            margin-top: 8px;
+        }
+        .btn-adicionar:hover {
+            background: #62462e;
+        }
+
+        /* Regras de Impressão / PDF Corrigidas */
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+            body {
+                background: #fff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .global-nav {
+                display: none !important;
+            }
+            .container {
+                box-shadow: none !important;
+                border: 2px solid #4a2e18 !important;
+                outline: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 15px !important;
+                margin: 0 auto !important;
+                background: #f4ecd0 !important;
+            }
+            .header {
+                border-bottom: 3px double #7c5a3b !important;
+            }
+            .top-action-bar, .btn-adicionar, .btn-acao {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Menu de Navegação Global (Oculto ao imprimir) -->
+<div class="global-nav">
+    <a href="index.html">🏠 Início</a>
+    <a href="guia.html">📖 Guia</a>
+    <a href="ficha.html">🛡️ Ficha</a>
+    <a href="magias.html">✨ Magias</a>
+    <a href="historia.html">🗺️ História & Mapa</a>
+</div>
+
+<div class="container">
+    <div class="header">
+        <img src="brasao.png" alt="Brasão de Khalmorya" onerror="this.style.display='none'">
+        <div class="header-text">
+            <h1>Sociedade de Khalmyr</h1>
+            <div class="subtitle">Ficha de Herói</div>
+        </div>
+    </div>
+
+    <!-- Barra de Ações do Topo com Botão de PDF -->
+    <div class="top-action-bar">
+        <div>
+            <label style="display:inline; margin-right:5px;">Pontos da Campanha:</label>
+            <input type="number" id="pontos-totais" value="10" min="1" onchange="calcularTudo(event)">
+        </div>
+        <div class="points-display" id="pontos-restantes">
+            Restantes: 10
+        </div>
+        <div>
+            <button type="button" class="btn-pdf" onclick="gerarPDF()">📜 Gerar PDF</button>
+        </div>
+    </div>
+
+    <div class="panel grid-3">
+        <div>
+            <label>Nome do Herói:</label>
+            <input type="text" placeholder="Nome do personagem...">
+        </div>
+        <div>
+            <label>Arquétipo:</label>
+            <select id="arquetipo">
+                <option value="" disabled selected>Selecione...</option>
+                <option value="paladino">Paladino</option>
+                <option value="ranger">Ranger</option>
+                <option value="mago">Mago</option>
+                <option value="bardo">Bardo</option>
+                <option value="barbaro">Bárbaro / Guerreiro</option>
+                <option value="ladino">Ladino</option>
+            </select>
+        </div>
+        <div>
+            <label>Raça (Custo):</label>
+            <select id="raca" onchange="calcularTudo(event)">
+                <option value="" disabled selected>Selecione...</option>
+                <option value="0">Humano (0 pt) - Ganha +1 ponto extra para atributos ou perícias.</option>
+                <option value="1">Elfo (1 pt) - Sentidos aguçados e forte ligação com a magia e a natureza de Arton.</option>
+                <option value="1">Anão (1 pt) - Vigor inabalável, resistência a rigores e físico robusto.</option>
+                <option value="1">Meio-Orc (1 pt) - Força bruta e instinto de sobrevivência feroz.</option>
+                <option value="1">Minotauro (1 pt) - Poder físico formidável, mas com pavor místico de alturas.</option>
+                <option value="1">Halfling (1 pt) - Pequeno, extremamente ágil, sortudo e especialista em furtividade.</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="panel">
+            <h2>Atributos Base</h2>
+            <p style="font-size:0.75em; color:#554033; margin-bottom: 8px; font-style: italic;">Custo: 1 Ponto por nível.</p>
+            
+            <div class="attr-row">
+                <label>Poder (P):</label>
+                <input type="number" class="attr-input" id="attr-p" min="0" max="5" value="0" onchange="calcularTudo(event)" onfocus="guardarValor(this)">
+            </div>
+            <div class="attr-row">
+                <label>Habilidade (H):</label>
+                <input type="number" class="attr-input" id="attr-h" min="0" max="5" value="0" onchange="calcularTudo(event)" onfocus="guardarValor(this)">
+            </div>
+            <div class="attr-row">
+                <label>Resistência (R):</label>
+                <input type="number" class="attr-input" id="attr-r" min="0" max="5" value="0" onchange="calcularTudo(event)" onfocus="guardarValor(this)">
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Recursos</h2>
+            <div class="recursos">
+                <div class="recurso-box recurso-pa">
+                    PA
+                    <span id="res-pa">0</span>
+                    <small>Ação<br>(Igual ao P)</small>
+                </div>
+                <div class="recurso-box recurso-pm">
+                    PM
+                    <span id="res-pm">0</span>
+                    <small>Magia<br>(H x 5)</small>
+                </div>
+                <div class="recurso-box recurso-pv">
+                    PV
+                    <span id="res-pv">0</span>
+                    <small style="margin-top:2px;">Vida<br>(R x 5)</small>
+                    <div class="pv-flex">
+                        <small>Atual</small>
+                        <input type="number" id="res-pv-atual" class="pv-atual-input" value="0" title="PV Atual">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Perícias (1 pt cada)</h2>
+        <p style="font-size:0.75em; color:#554033; margin-bottom: 8px; font-style: italic;">Role +1D de ganho quando realizar testes ligados à perícia que possui.</p>
+        <div class="checkbox-group grid-pericias" id="pericias">
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Luta</strong><span class="desc">Domínio de armas brancas, socos, pontapés e manobras ofensivas ou defensivas em combate direto.</span></div></label>
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Percepção</strong><span class="desc">Sentidos alertas para notar emboscadas, armadilhas, pistas ocultas e mentiras.</span></div></label>
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Medicina</strong><span class="desc">Capacidade de estabilizar ferimentos graves, tratar enfermidades e fazer curativos de campo.</span></div></label>
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Mística</strong><span class="desc">Estudo e compreensão de rituais, entidades arcanas, criaturas mágicas e feitiços.</span></div></label>
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Sustento</strong><span class="desc">Habilidade de rastrear presas, caçar, encontrar abrigo e sobreviver em ermos selvagens.</span></div></label>
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Influência</strong><span class="desc">Eloqüência para negociar, liderar companheiros, barganhar ou intimidar adversários.</span></div></label>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="panel">
+            <h2>Vantagens (1 pt cada)</h2>
+            <div class="checkbox-group" id="vantagens">
+                <label id="lbl-agil"><input type="checkbox" id="v-agil" onchange="calcularTudo(event)"> <div><strong>Ágil</strong><span class="desc">Reflexos fora do comum. Concede bônus em testes ágeis e de esquiva.</span></div></label>
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Ataque Esp. (Potente)</strong><span class="desc">Força concentrada. Gasta 1 PM para somar temporariamente +2 de Poder em um ataque.</span></div></label>
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Ataque Esp. (Perigoso)</strong><span class="desc">Golpe cirúrgico e letal. Gasta 1 PM para garantir efeitos críticos ampliados.</span></div></label>
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Defesa Esp. (Esquiva)</strong><span class="desc">Agilidade defensiva. Gasta 2 PM para usar Habilidade no lugar de Resistência ao defender-se.</span></div></label>
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Defesa Esp. (Tenaz)</strong><span class="desc">Postura firme. Gasta 1 PM para receber +2 bônus em sua Defesa no turno.</span></div></label>
+                <label id="lbl-vigoroso"><input type="checkbox" id="v-vigoroso" onchange="calcularTudo(event)"> <div><strong>Vigoroso</strong><span class="desc">Vitalidade impressionante. Concede bônus em saúde e testes de vigor.</span></div></label>
+                <label id="lbl-forte" style="grid-column: span 2;"><input type="checkbox" id="v-forte" onchange="calcularTudo(event)"> <div><strong>Forte</strong><span class="desc">Músculos imponentes. Concede bônus em esforço e testes de força.</span></div></label>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Desvantagens (Ganha +1 pt)</h2>
+            <p style="font-size:0.75em; color:#554033; margin-bottom: 8px; font-style: italic;">Máximo de +2 pontos bônus acumulados.</p>
+            <div class="checkbox-group" id="desvantagens">
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Código dos Heróis</strong><span class="desc">Juramento sagrado: jamais recusar ajuda a quem pede, nunca atacar covardemente e sempre cumprir a palavra.</span></div></label>
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Código do Combate</strong><span class="desc">Honra marcial estrita: nunca atacar oponentes caídos, desarmados ou em desvantagem numérica flagrante.</span></div></label>
+                <label id="lbl-atrapalhado"><input type="checkbox" id="d-atrapalhado" onchange="calcularTudo(event)"> <div><strong>Atrapalhado</strong><span class="desc">Falta de coordenação motora crônica. Perde bônus em testes ágeis.</span></div></label>
+                <label id="lbl-fracote"><input type="checkbox" id="d-fracote" onchange="calcularTudo(event)"> <div><strong>Fracote</strong><span class="desc">Estrutura física deficiente para cargas e força bruta.</span></div></label>
+                <label id="lbl-fragil" style="grid-column: span 2;"><input type="checkbox" id="d-fragil" onchange="calcularTudo(event)"> <div><strong>Frágil</strong><span class="desc">Constituição física delicada contra venenos, fadiga e doenças.</span></div></label>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Inventário e Armas</h2>
+        <p style="font-size:0.75em; color:#554033; margin-bottom: 8px; font-style: italic;">Adicione abaixo as armas que seu herói carrega (opcional). Os testes de acerto usam d20 e os danos usam d6:</p>
+        
+        <table id="tabela-armas">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Arma</th>
+                    <th>Atributo</th>
+                    <th>Teste (d20) / Dano (d6)</th>
+                    <th>Efeito</th>
+                    <th style="width: 45px; text-align: center;">Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Vazio por padrão, jogador adiciona se quiser -->
+            </tbody>
+        </table>
+        <button type="button" class="btn-adicionar" onclick="adicionarArma()">+ Adicionar Arma</button>
+        
+        <h4 style="margin-top: 15px; font-family:'Cinzel', serif; color:#4a2e18; font-size:0.85em;">Equipamento Padrão:</h4>
+        <ul style="margin-top: 3px; font-size:0.85em;">
+            <li><strong>Insígnia dos Servos de Khalmyr</strong>. Roupas de viagem, odre de água e ração de combate.</li>
+        </ul>
+    </div>
+
+    <div class="panel">
+        <h2>Notas e Histórico do Herói</h2>
+        <textarea placeholder="Anote aqui detalhes sobre a insígnia, respostas às perguntas da campanha, anotações de sessões ou histórico do personagem..."></textarea>
+    </div>
+</div>
+
+<script>
+    const dadosArmas = {
+        'espada': { attr: 'Poder (P)', teste: 'd20 + P (Acerto) | 1d6 (Dano)', efeito: 'Padrão e equilibrada.' },
+        'espadalonga': { attr: 'Poder (P)', teste: 'd20 + P (Acerto) | 2d6 (Dano)', efeito: 'Duas mãos. Maior dano.' },
+        'adaga': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 1d6 (Dano)', efeito: 'Rápida e oculta.' },
+        'machado': { attr: 'Poder (P)', teste: 'd20 + P (Acerto) | 2d6 (Dano)', efeito: 'Brutal e focada em força.' },
+        'lanca': { attr: 'P ou H', teste: 'd20 + P/H (Acerto) | 1d6 (Dano)', efeito: 'Permite alcance.' },
+        'arcocurto': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 1d6 (Dano)', efeito: 'Distância padrão.' },
+        'arcolongo': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 2d6 (Dano)', efeito: 'Duas mãos. Longo alcance e maior dano.' },
+        'bestasimples': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 1d6 (Dano)', efeito: 'Uma mão. Disparo rápido.' },
+        'bestapesada': { attr: 'Poder (P)', teste: 'd20 + P (Acerto) | 2d6 (Dano)', efeito: 'Arma de Duas Mãos. Gasta 1 turno recarregando, dano pesado.' },
+        'funda': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 1d6 (Dano)', efeito: 'Distância simples.' },
+        'cajado': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 1d6 (Dano)', efeito: 'Foco para Magias.' }
+    };
+
+    function guardarValor(elemento) {
+        elemento.dataset.previousValue = elemento.value;
+    }
+
+    document.getElementById('raca').dataset.previousValue = document.getElementById('raca').value;
+
+    function calcularTudo(event) {
+        let maxPontos = parseInt(document.getElementById('pontos-totais').value) || 10;
+        
+        let p = parseInt(document.getElementById('attr-p').value) || 0;
+        let h = parseInt(document.getElementById('attr-h').value) || 0;
+        let r = parseInt(document.getElementById('attr-r').value) || 0;
+        
+        let racaDropdown = document.getElementById('raca');
+        let racaCusto = (racaDropdown.value === "0") ? -1 : (racaDropdown.value === "" ? 0 : 1);
+
+        let periciasCheck = document.querySelectorAll('#pericias input[type="checkbox"]:checked');
+        let periciasCusto = periciasCheck.length;
+
+        let vAgil = document.getElementById('v-agil').checked;
+        let vVigoroso = document.getElementById('v-vigoroso').checked;
+        let vForte = document.getElementById('v-forte').checked;
+
+        let dAtrapalhado = document.getElementById('d-atrapalhado').checked;
+        let dFracote = document.getElementById('d-fracote').checked;
+        let dFragil = document.getElementById('d-fragil').checked;
+
+        if (event && event.target) {
+            let targetId = event.target.id;
+            if (targetId === 'v-agil' && vAgil && dAtrapalhado) {
+                alert("Conflito: Quem tem Ágil não pode ter a desvantagem Atrapalhado!");
+                event.target.checked = false;
+                vAgil = false;
+            }
+            if (targetId === 'd-atrapalhado' && dAtrapalhado && vAgil) {
+                alert("Conflito: Quem tem Atrapalhado não pode ter a vantagem Ágil!");
+                event.target.checked = false;
+                dAtrapalhado = false;
+            }
+            if (targetId === 'v-vigoroso' && vVigoroso && dFragil) {
+                alert("Conflito: Quem tem Vigoroso não pode ter a desvantagem Frágil!");
+                event.target.checked = false;
+                vVigoroso = false;
+            }
+            if (targetId === 'd-fragil' && dFragil && vVigoroso) {
+                alert("Conflito: Quem tem Frágil não pode ter a vantagem Vigoroso!");
+                event.target.checked = false;
+                dFragil = false;
+            }
+            if (targetId === 'v-forte' && vForte && dFracote) {
+                alert("Conflito: Quem tem Forte não pode ter a desvantagem Fracote!");
+                event.target.checked = false;
+                vForte = false;
+            }
+            if (targetId === 'd-fracote' && dFracote && vForte) {
+                alert("Conflito: Quem tem Fracote não pode ter a vantagem Forte!");
+                event.target.checked = false;
+                dFracote = false;
+            }
+        }
+
+        document.getElementById('d-atrapalhado').disabled = vAgil;
+        document.getElementById('v-agil').disabled = dAtrapalhado;
+        document.getElementById('d-fracote').disabled = vForte;
+        document.getElementById('v-forte').disabled = dFracote;
+        document.getElementById('d-fragil').disabled = vVigoroso;
+        document.getElementById('v-vigoroso').disabled = dFragil;
+
+        document.getElementById('lbl-agil').className = vAgil ? "" : (dAtrapalhado ? "disabled-label" : "");
+        document.getElementById('lbl-atrapalhado').className = dAtrapalhado ? "" : (vAgil ? "disabled-label" : "");
+        document.getElementById('lbl-forte').className = vForte ? "" : (dFracote ? "disabled-label" : "");
+        document.getElementById('lbl-fracote').className = dFracote ? "" : (vForte ? "disabled-label" : "");
+        document.getElementById('lbl-vigoroso').className = vVigoroso ? "" : (dFragil ? "disabled-label" : "");
+        document.getElementById('lbl-fragil').className = dFragil ? "" : (vVigoroso ? "disabled-label" : "");
+
+        let vantagensCheck = document.querySelectorAll('#vantagens input[type="checkbox"]:checked');
+        let vantagensCusto = vantagensCheck.length;
+
+        let desvCheck = document.querySelectorAll('#desvantagens input[type="checkbox"]:checked');
+        let desvBonus = desvCheck.length;
+        if(desvBonus > 2) desvBonus = 2;
+
+        let pontosGastos = (p + h + r) + racaCusto + periciasCusto + vantagensCusto - desvBonus;
+        let pontosRestantes = maxPontos - pontosGastos;
+        
+        if(pontosRestantes < 0 && event) {
+            alert("Atenção: Pontos insuficientes!");
+            let elemento = event.target;
+            
+            if(elemento.type === 'checkbox') {
+                elemento.checked = false;
+                calcularTudo();
+            } else {
+                elemento.value = elemento.dataset.previousValue || elemento.defaultValue;
+            }
+            return;
+        }
+
+        document.getElementById('pontos-restantes').innerText = "Restantes: " + pontosRestantes;
+        
+        document.getElementById('res-pa').innerText = p;
+        document.getElementById('res-pm').innerText = h * 5;
+        
+        let pvMax = r * 5;
+        document.getElementById('res-pv').innerText = pvMax;
+        
+        let pvAtualInput = document.getElementById('res-pv-atual');
+        if (!pvAtualInput.dataset.manualEdited) {
+            pvAtualInput.value = pvMax;
+        }
+
+        if (event && event.target && event.target.type !== 'checkbox') {
+            event.target.dataset.previousValue = event.target.value;
+        }
+    }
+
+    document.getElementById('res-pv-atual').addEventListener('input', function() {
+        this.dataset.manualEdited = "true";
+    });
+
+    function atualizarInfoArma(selectElement) {
+        let linha = selectElement.closest('tr');
+        let valor = selectElement.value;
+        let info = dadosArmas[valor];
+
+        linha.querySelector('.td-attr').innerText = info.attr;
+        linha.querySelector('.td-teste').innerText = info.teste;
+        linha.querySelector('.td-efeito').innerText = info.efeito;
+    }
+
+    function adicionarArma() {
+        let tbody = document.querySelector('#tabela-armas tbody');
+        let novaLinha = document.createElement('tr');
+        novaLinha.innerHTML = `
+            <td>
+                <select onchange="atualizarInfoArma(this)">
+                    <option value="espada">Espada (Uma Mão)</option>
+                    <option value="espadalonga">Espada Longa (Duas Mãos)</option>
+                    <option value="adaga">Adaga</option>
+                    <option value="machado">Machado de Batalha</option>
+                    <option value="lanca">Lança</option>
+                    <option value="arcocurto">Arco Curto</option>
+                    <option value="arcolongo">Arco Longo (Duas Mãos)</option>
+                    <option value="bestasimples">Besta Simples (Uma Mão)</option>
+                    <option value="bestapesada">Besta Pesada (Duas Mãos)</option>
+                    <option value="funda">Funda</option>
+                    <option value="cajado">Cajado Arcano</option>
+                </select>
+            </td>
+            <td class="td-attr">Poder (P)</td>
+            <td class="td-teste">d20 + P (Acerto) | 1d6 (Dano)</td>
+            <td class="td-efeito">Padrão e equilibrada.</td>
+            <td style="text-align: center;"><button type="button" class="btn-acao" onclick="removerArma(this)">X</button></td>
+        `;
+        tbody.appendChild(novaLinha);
+    }
+
+    function removerArma(botao) {
+        let linha = botao.closest('tr');
+        linha.remove();
+    }
+
+    function gerarPDF() {
+        window.print();
+    }
+
+    window.onload = function() {
+        calcularTudo();
+    };
+</script>
+
+</body>
+</html>

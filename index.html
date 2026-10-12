@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Início - Vila de Khalmorya</title>
+    <!-- Fontes Medievais -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            background-color: #1a1007;
+            background-image: radial-gradient(#2b1b11, #0d0804);
+            color: #2c1810;
+            line-height: 1.5;
+            padding: 15px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #f4ecd0;
+            background-image: linear-gradient(to bottom, #f7f1df, #efe2c0);
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 50px rgba(139,69,19,0.15);
+            border: 6px solid #4a2e18;
+            outline: 2px solid #8c6d46;
+            outline-offset: -10px;
+            text-align: center;
+        }
+        .header img {
+            max-width: 110px;
+            filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4));
+            margin-bottom: 15px;
+        }
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: #8b0000;
+            font-size: 2.3em;
+            margin: 0;
+            line-height: 1.1;
+        }
+        .subtitle {
+            font-family: 'Cinzel', serif;
+            color: #5c4033;
+            font-size: 1em;
+            letter-spacing: 3px;
+            margin-top: 5px;
+            margin-bottom: 30px;
+        }
+        p {
+            font-size: 1em;
+            color: #4a2e18;
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+        }
+        /* Grid de Navegação */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .menu-card {
+            background: #fdfbf7;
+            border: 2px solid #b59b6c;
+            padding: 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #2c1810;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, background 0.2s, border-color 0.2s;
+        }
+        .menu-card:hover {
+            transform: translateY(-3px);
+            background: #fcf8ee;
+            border-color: #8b0000;
+        }
+        .menu-card h3 {
+            font-family: 'Cinzel', serif;
+            color: #8b0000;
+            font-size: 1.2em;
+            margin: 0 0 8px 0;
+        }
+        .menu-card p {
+            font-size: 0.85em;
+            color: #5c4033;
+            margin: 0;
+        }
+        @media (max-width: 600px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <img src="brasao.png" alt="Brasão de Khalmorya" onerror="this.style.display='none'">
+        <h1>Vila de Khalmorya</h1>
+        <div class="subtitle">Central de Ferramentas da Aventura</div>
+    </div>
+
+    <p>Bem-vindo à central de registros da <strong>Sociedade de Khalmyr</strong>. Escolha abaixo o documento ou ferramenta que deseja acessar para preparar seu herói ou guiar sua sessão de jogo:</p>
+
+    <div class="menu-grid">
+        <a href="guia.html" class="menu-card">
+            <h3>📖 Guia Rápido</h3>
+            <p>Regras básicas, criação de heróis, raças, arquétipos, vantagens e desvantagens.</p>
+        </a>
+        <a href="ficha.html" class="menu-card">
+            <h3>🛡️ Ficha de Herói</h3>
+            <p>Ficha digital interativa com cálculo automático de pontos, recursos e inventário de armas.</p>
+        </a>
+        <a href="grimorio.html" class="menu-card">
+            <h3>✨ Grimório de Magias</h3>
+            <p>Manual completo contendo magias simples, sagradas de paladinos e avançadas de magos.</p>
+        </a>
+        <a href="historia.html" class="menu-card">
+            <h3>🗺️ História & Mapa</h3>
+            <p>O plot oficial da campanha, crônicas da guerra e o mapa interativo com zoom e destaques.</p>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
