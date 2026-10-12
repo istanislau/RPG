@@ -6,6 +6,128 @@
     <title>Ficha de Personagem - Khalmorya (3D&T)</title>
     <!-- Fontes Medievais -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "COLOQUE_AQUI_AS_SUAS_CREDENCIAIS_DO_FIREBASE",
+            authDomain: "o-teu-projeto.firebaseapp.com",
+            projectId: "o-teu-projeto",
+            storageBucket: "o-teu-projeto.appspot.com",
+            messagingSenderId: "00000000000",
+            appId: "1:000000000:web:00000"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+        const EMAIL_ADMIN_SUPREMO = "teu.email.admin@gmail.com";
+
+        window.abrirModalLogin = function() { document.getElementById('modal-login').style.display = 'flex'; };
+        window.fecharModalLogin = function() { document.getElementById('modal-login').style.display = 'none'; };
+        window.fazerLoginGoogle = async function() { try { await signInWithPopup(auth, provider); fecharModalLogin(); } catch (error) { console.error(error); } };
+        window.fazerLogout = async function() { await signOut(auth); location.reload(); };
+
+        onAuthStateChanged(auth, async (user) => {
+            const userMenuArea = document.getElementById('user-menu-area');
+            const linkPainelAdmin = document.getElementById('link-painel-admin');
+
+            if (user) {
+                let userRef = doc(db, "usuarios", user.uid);
+                let userSnap = await getDoc(userRef);
+                let papel = "jogador";
+                if (user.email === EMAIL_ADMIN_SUPREMO) {
+                    papel = "admin";
+                    if (!userSnap.exists()) await setDoc(userRef, { email: user.email, papel: "admin" });
+                } else if (userSnap.exists()) {
+                    papel = userSnap.data().papel || "jogador";
+                } else {
+                    await setDoc(userRef, { email: user.email, papel: "jogador" });
+                }
+
+                userMenuArea.innerHTML = `<span>👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
+                if (papel === "admin" && linkPainelAdmin) linkPainelAdmin.style.display = 'inline-block';
+
+                // Verificar se foi aberta alguma ficha específica via URL (?id=...)
+                const urlParams = new URLSearchParams(window.location.search);
+                const fichaId = urlParams.get('id');
+                if (fichaId) {
+                    carregarFichaPorId(fichaId);
+                }
+            } else {
+                userMenuArea.innerHTML = `<button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em; background:#8b0000;">🔑 Logar</button>`;
+                if (linkPainelAdmin) linkPainelAdmin.style.display = 'none';
+
+                // Se abriu diretamente pela URL (sem vir do index), mostra o pop-up
+                if (!sessionStorage.getItem('veio_do_index')) {
+                    abrirModalLogin();
+                } else {
+                    sessionStorage.removeItem('veio_do_index');
+                }
+            }
+        });
+
+        window.salvarFichaNuvem = async function() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Precisa de fazer login com o Google para salvar a ficha na nuvem!");
+                abrirModalLogin();
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            let fichaId = urlParams.get('id') || user.uid + "_" + Date.now();
+
+            let dadosFicha = {
+                uid: user.uid,
+                email: user.email,
+                nomeHeroi: document.getElementById('nome-heroi').value,
+                arquetipo: document.getElementById('arquetipo').value,
+                raca: document.getElementById('raca').value,
+                p: document.getElementById('attr-p').value,
+                h: document.getElementById('attr-h').value,
+                r: document.getElementById('attr-r').value,
+                pvAtual: document.getElementById('res-pv-atual').value,
+                atualizadoEm: new Date()
+            };
+
+            try {
+                await setDoc(doc(db, "fichas", fichaId), dadosFicha);
+                alert("Ficha salva com sucesso na nuvem!");
+                if (!urlParams.get('id')) {
+                    window.history.replaceState({}, '', `ficha.html?id=${fichaId}`);
+                }
+            } catch (e) {
+                console.error("Erro ao salvar:", e);
+                alert("Erro ao salvar ficha.");
+            }
+        };
+
+        async function carregarFichaPorId(id) {
+            try {
+                let docSnap = await getDoc(doc(db, "fichas", id));
+                if (docSnap.exists()) {
+                    let d = docSnap.data();
+                    document.getElementById('nome-heroi').value = d.nomeHeroi || '';
+                    document.getElementById('arquetipo').value = d.arquetipo || '';
+                    document.getElementById('raca').value = d.raca || '';
+                    document.getElementById('attr-p').value = d.p || 0;
+                    document.getElementById('attr-h').value = d.h || 0;
+                    document.getElementById('attr-r').value = d.r || 0;
+                    document.getElementById('res-pv-atual').value = d.pvAtual || 0;
+                    calcularTudo();
+                }
+            } catch (e) {
+                console.error("Erro ao carregar ficha:", e);
+            }
+        }
+    </script>
+
     <style>
         body {
             font-family: 'Lora', serif;
@@ -35,6 +157,7 @@
             margin: 0 auto 15px auto;
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 10px;
             font-family: 'Cinzel', serif;
             font-size: 0.85em;
@@ -54,6 +177,25 @@
         }
         .global-nav a:hover {
             background: #8b0000;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background: #f4ecd0;
+            border: 4px solid #4a2e18;
+            padding: 30px;
+            border-radius: 4px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
 
         /* Cabeçalho centralizado com brasão à esquerda */
@@ -386,13 +528,28 @@
 </head>
 <body>
 
+<!-- Popup de Boas-Vindas / Login -->
+<div class="modal-overlay" id="modal-login">
+    <div class="modal-box">
+        <h3 style="font-family:'Cinzel',serif; color:#8b0000; margin-top:0;">Portal de Khalmorya</h3>
+        <p style="font-size:0.9em; margin-bottom:20px;">Deseja fazer login com o Google para salvar a ficha ou continuar sem login?</p>
+        <button type="button" class="btn-acao" onclick="fazerLoginGoogle()" style="width:100%; margin-bottom:10px; background:#4a2e18; padding:8px;">🔑 Entrar com Google</button>
+        <button type="button" class="btn-acao" onclick="fecharModalLogin()" style="width:100%; padding:8px;">Continuar sem login</button>
+    </div>
+</div>
+
 <!-- Menu de Navegação Global (Oculto ao imprimir) -->
 <div class="global-nav">
-    <a href="index.html">🏠 Início</a>
-    <a href="guia.html">📖 Guia</a>
+    <a href="index.html" onclick="sessionStorage.setItem('veio_do_index', 'true')">🏠 Início</a>
+    <a href="guia.html" onclick="sessionStorage.setItem('veio_do_index', 'true')">📖 Guia</a>
     <a href="ficha.html">🛡️ Ficha</a>
-    <a href="grimorio.html">✨ Magias</a>
-    <a href="historia.html">🗺️ História & Mapa</a>
+    <a href="grimorio.html" onclick="sessionStorage.setItem('veio_do_index', 'true')">✨ Magias</a>
+    <a href="historia.html" onclick="sessionStorage.setItem('veio_do_index', 'true')">🗺️ História & Mapa</a>
+    <a href="personagens.html" onclick="sessionStorage.setItem('veio_do_index', 'true')">📜 Personagens</a>
+    <a href="painel.html" id="link-painel-admin" style="display:none; background:#8b0000; color:#fff;">⚙️ Painel Admin</a>
+    <div id="user-menu-area" style="display:inline-block; margin-left: 10px;">
+        <button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em; background:#8b0000;">🔑 Logar</button>
+    </div>
 </div>
 
 <div class="container">
@@ -414,6 +571,7 @@
             Restantes: 10
         </div>
         <div>
+            <button type="button" class="btn-pdf" onclick="salvarFichaNuvem()" style="background:#205493; margin-right:5px;">💾 Salvar Nuvem</button>
             <button type="button" class="btn-pdf" onclick="gerarPDF()">📜 Gerar PDF</button>
         </div>
     </div>
@@ -421,7 +579,7 @@
     <div class="panel grid-3">
         <div>
             <label>Nome do Herói:</label>
-            <input type="text" placeholder="Nome do personagem...">
+            <input type="text" id="nome-heroi" placeholder="Nome do personagem...">
         </div>
         <div>
             <label>Arquétipo:</label>
@@ -562,7 +720,7 @@
 
     <div class="panel">
         <h2>Notas e Histórico do Herói</h2>
-        <textarea placeholder="Anote aqui detalhes sobre a insígnia, respostas às perguntas da campanha, anotações de sessões ou histórico do personagem..."></textarea>
+        <textarea id="notas-heroi" placeholder="Anote aqui detalhes sobre a insígnia, respostas às perguntas da campanha, anotações de sessões ou histórico do personagem..."></textarea>
     </div>
 </div>
 

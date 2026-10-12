@@ -6,6 +6,98 @@
     <title>Início - Vila de Khalmorya</title>
     <!-- Fontes Medievais -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC8Km2yM4VC6O6yPYHjIfhAWPEo8F2UF8c",
+            authDomain: "rpgsnz-efd94.firebaseapp.com",
+            projectId: "rpgsnz-efd94",
+            storageBucket: "rpgsnz-efd94.firebasestorage.app",
+            messagingSenderId: "561917149839",
+            appId: "1:561917149839:web:c799a00fb91ad2da7ea6fa"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+        const EMAIL_ADMIN_SUPREMO = "teu.email.admin@gmail.com";
+
+        window.abrirModalLogin = function() { document.getElementById('modal-login').style.display = 'flex'; };
+        window.fecharModalLogin = function() { 
+            document.getElementById('modal-login').style.display = 'none'; 
+            sessionStorage.setItem('popup_visto_index', 'true');
+        };
+        window.fazerLoginGoogle = async function() { 
+            try { 
+                await signInWithPopup(auth, provider); 
+                document.getElementById('modal-login').style.display = 'none'; 
+                sessionStorage.setItem('popup_visto_index', 'true');
+            } catch (error) { console.error(error); } 
+        };
+        window.fazerLogout = async function() { await signOut(auth); location.reload(); };
+
+        onAuthStateChanged(auth, async (user) => {
+            const userMenuArea = document.getElementById('user-menu-area');
+            const secaoCarrossel = document.getElementById('secao-carrossel');
+            const trackCarrossel = document.getElementById('carrossel-track');
+            const linkPainelAdmin = document.getElementById('link-painel-admin');
+
+            if (user) {
+                let userRef = doc(db, "usuarios", user.uid);
+                let userSnap = await getDoc(userRef);
+                let papel = "jogador";
+                if (user.email === EMAIL_ADMIN_SUPREMO) {
+                    papel = "admin";
+                    if (!userSnap.exists()) await setDoc(userRef, { email: user.email, papel: "admin" });
+                } else if (userSnap.exists()) {
+                    papel = userSnap.data().papel || "jogador";
+                } else {
+                    await setDoc(userRef, { email: user.email, papel: "jogador" });
+                }
+
+                userMenuArea.innerHTML = `<span>👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
+                
+                // Mostrar Painel se for Admin
+                if (papel === "admin" && linkPainelAdmin) {
+                    linkPainelAdmin.style.display = 'inline-block';
+                }
+
+                // Carregar fichas do utilizador para o carrossel
+                const q = query(collection(db, "fichas"), where("uid", "==", user.uid));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    secaoCarrossel.style.display = 'block';
+                    let htmlCards = "";
+                    querySnapshot.forEach((d) => {
+                        let ficha = d.data();
+                        htmlCards += `
+                            <div class="carrossel-card" onclick="window.location.href='ficha.html?id=${d.id}'">
+                                <strong>🛡️ ${ficha.nomeHeroi || 'Herói sem nome'}</strong>
+                                <p style="font-size:0.8em; margin:5px 0 0 0; color:#5c4033;">Arquétipo: ${ficha.arquetipo || 'N/D'}</p>
+                            </div>
+                        `;
+                    });
+                    trackCarrossel.innerHTML = htmlCards;
+                }
+            } else {
+                userMenuArea.innerHTML = `<button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em; background:#8b0000;">🔑 Logar</button>`;
+                if (linkPainelAdmin) linkPainelAdmin.style.display = 'none';
+                secaoCarrossel.style.display = 'none';
+
+                if (!sessionStorage.getItem('popup_visto_index')) {
+                    abrirModalLogin();
+                }
+            }
+        });
+    </script>
+
     <style>
         body {
             font-family: 'Lora', serif;
@@ -54,6 +146,24 @@
             max-width: 700px;
             margin: 0 auto 30px auto;
         }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background: #f4ecd0;
+            border: 4px solid #4a2e18;
+            padding: 30px;
+            border-radius: 4px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
         /* Grid de Navegação */
         .menu-grid {
             display: grid;
@@ -88,6 +198,46 @@
             color: #5c4033;
             margin: 0;
         }
+        /* Carrossel de Fichas */
+        .carrossel-container {
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+            text-align: left;
+            background: rgba(255, 253, 245, 0.7);
+            border: 1px solid #b59b6c;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .carrossel-track {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        .carrossel-card {
+            min-width: 180px;
+            background: #fdfbf7;
+            border: 1px solid #b59b6c;
+            padding: 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: border-color 0.2s;
+        }
+        .carrossel-card:hover {
+            border-color: #8b0000;
+        }
+        .btn-acao {
+            background: #8b0000;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85em;
+        }
+        .btn-acao:hover { background: #a00; }
         @media (max-width: 600px) {
             .menu-grid {
                 grid-template-columns: 1fr;
@@ -97,11 +247,35 @@
 </head>
 <body>
 
+<div class="modal-overlay" id="modal-login">
+    <div class="modal-box">
+        <h3 style="font-family:'Cinzel',serif; color:#8b0000; margin-top:0;">Portal de Khalmorya</h3>
+        <p style="font-size:0.9em; margin-bottom:20px;">Deseja fazer login com o Google para gerir as suas fichas ou continuar sem login?</p>
+        <button type="button" class="btn-acao" onclick="fazerLoginGoogle()" style="width:100%; margin-bottom:10px; background:#4a2e18;">🔑 Entrar com Google</button>
+        <button type="button" class="btn-acao" onclick="fecharModalLogin()" style="width:100%;">Continuar sem login</button>
+    </div>
+</div>
+
+<!-- Menu Superior Global / Conta -->
+<div style="max-width: 900px; margin: 0 auto 15px auto; display: flex; justify-content: flex-end; align-items: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em;">
+    <a href="personagens.html" style="background:#7c5a3b; color:#f4ecd0; padding:4px 8px; border-radius:2px; text-decoration:none;">📜 Personagens</a>
+    <a href="painel.html" id="link-painel-admin" style="display:none; background:#8b0000; color:#fff; padding:4px 8px; border-radius:2px; text-decoration:none;">⚙️ Painel Admin</a>
+    <div id="user-menu-area" style="display:inline-block;">
+        <button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em;">🔑 Logar</button>
+    </div>
+</div>
+
 <div class="container">
     <div class="header">
         <img src="brasao.png" alt="Brasão de Khalmorya" onerror="this.style.display='none'">
         <h1>Vila de Khalmorya</h1>
         <div class="subtitle">Central de Ferramentas da Aventura</div>
+    </div>
+
+    <!-- Carrossel de Fichas do Utilizador Logado -->
+    <div id="secao-carrossel" class="carrossel-container" style="display:none;">
+        <h3 style="font-family:'Cinzel',serif; color:#8b0000; font-size:1em; margin:0 0 10px 0;">🛡️ Os Teus Heróis (Acesso Rápido)</h3>
+        <div class="carrossel-track" id="carrossel-track"></div>
     </div>
 
     <p>Bem-vindo à central de registros da <strong>Sociedade de Khalmyr</strong>. Escolha abaixo o documento ou ferramenta que deseja acessar para preparar seu herói ou guiar sua sessão de jogo:</p>
@@ -111,7 +285,7 @@
             <h3>📖 Guia Rápido</h3>
             <p>Regras básicas, criação de heróis, raças, arquétipos, vantagens e desvantagens.</p>
         </a>
-        <a href="ficha.html" class="menu-card">
+        <a href="ficha.html" class="menu-card" onclick="sessionStorage.setItem('veio_do_index', 'true')">
             <h3>🛡️ Ficha de Herói</h3>
             <p>Ficha digital interativa com cálculo automático de pontos, recursos e inventário de armas.</p>
         </a>

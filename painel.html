@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração - Vila de Khalmorya</title>
+    <!-- Fontes Medievais -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC8Km2yM4VC6O6yPYHjIfhAWPEo8F2UF8c",
+            authDomain: "rpgsnz-efd94.firebaseapp.com",
+            projectId: "rpgsnz-efd94",
+            storageBucket: "rpgsnz-efd94.firebasestorage.app",
+            messagingSenderId: "561917149839",
+            appId: "1:561917149839:web:c799a00fb91ad2da7ea6fa"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            const conteudoDiv = document.getElementById('conteudo-admin');
+            if (user) {
+                let userSnap = await getDoc(doc(db, "usuarios", user.uid));
+                let papel = userSnap.exists() ? userSnap.data().papel : "jogador";
+
+                if (papel !== "admin") {
+                    conteudoDiv.innerHTML = "<p style='color:#8b0000; font-weight:bold;'>Acesso negado. Apenas administradores podem aceder a esta página.</p>";
+                    return;
+                }
+
+                carregarTabelaUtilizadores();
+            } else {
+                conteudoDiv.innerHTML = "<p>Tens de fazer login como administrador.</p>";
+            }
+        });
+
+        async function carregarTabelaUtilizadores() {
+            const listaDiv = document.getElementById('lista-utilizadores');
+            try {
+                const querySnapshot = await getDocs(collection(db, "usuarios"));
+                let html = "<table style='width:100%; border-collapse:collapse; background:#fdfbf7;'><tr><th style='border:1px solid #b59b6c; padding:8px; background:#7c5a3b; color:#fff;'>E-mail</th><th style='border:1px solid #b59b6c; padding:8px; background:#7c5a3b; color:#fff;'>Papel Atual</th><th style='border:1px solid #b59b6c; padding:8px; background:#7c5a3b; color:#fff;'>Alterar Papel</th></tr>";
+                
+                querySnapshot.forEach((uDoc) => {
+                    let uData = uDoc.data();
+                    let uId = uDoc.id;
+                    let papelAtual = uData.papel || "jogador";
+                    
+                    html += `<tr>
+                        <td style='border:1px solid #b59b6c; padding:8px;'>${uData.email}</td>
+                        <td style='border:1px solid #b59b6c; padding:8px;'><strong>${papelAtual.toUpperCase()}</strong></td>
+                        <td style='border:1px solid #b59b6c; padding:8px; text-align:center;'>
+                            <select onchange="alterarPapel('${uId}', this.value)" style='padding:4px;'>
+                                <option value="jogador" ${papelAtual==='jogador'?'selected':''}>Jogador</option>
+                                <option value="mestre" ${papelAtual==='mestre'?'selected':''}>Mestre</option>
+                                <option value="admin" ${papelAtual==='admin'?'selected':''}>Admin</option>
+                            </select>
+                        </td>
+                    </tr>`;
+                });
+                html += "</table>";
+                listaDiv.innerHTML = html;
+            } catch (e) {
+                listaDiv.innerHTML = "<p>Erro ao carregar utilizadores.</p>";
+            }
+        }
+
+        window.alterarPapel = async function(uid, novoPapel) {
+            try {
+                await updateDoc(doc(db, "usuarios", uid), { papel: novoPapel });
+                alert("Papel atualizado com sucesso!");
+            } catch (e) {
+                console.error("Erro ao atualizar papel:", e);
+                alert("Erro ao atualizar papel.");
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            background-color: #1a1007;
+            background-image: radial-gradient(#2b1b11, #0d0804);
+            color: #2c1810;
+            line-height: 1.5;
+            padding: 15px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #f4ecd0;
+            background-image: linear-gradient(to bottom, #f7f1df, #efe2c0);
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 50px rgba(139,69,19,0.15);
+            border: 6px solid #4a2e18;
+            outline: 2px solid #8c6d46;
+            outline-offset: -10px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            border-bottom: 3px double #7c5a3b;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: #8b0000;
+            font-size: 2em;
+            margin: 0;
+        }
+        .panel {
+            background: rgba(255, 253, 245, 0.6);
+            border: 1px solid #b59b6c;
+            padding: 15px 20px;
+            border-radius: 3px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div style="max-width: 900px; margin: 0 auto 15px auto; display: flex; justify-content: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em;">
+    <a href="index.html" style="background: #4a2e18; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🏠 Início</a>
+    <a href="personagens.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📜 Personagens</a>
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1>Painel de Administração</h1>
+    </div>
+
+    <div class="panel" id="conteudo-admin">
+        <h2 style="font-family:'Cinzel',serif; color:#4a2e18; font-size:1.1em; margin-top:0;">Gestão de Utilizadores e Papéis</h2>
+        <div id="lista-utilizadores">A carregar dados de acesso...</div>
+    </div>
+</div>
+
+</body>
+</html>

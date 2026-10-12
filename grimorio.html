@@ -6,6 +6,57 @@
     <title>Grimório de Magias - Vila de Khalmorya</title>
     <!-- Fontes Medievais -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "COLOQUE_AQUI_AS_SUAS_CREDENCIAIS_DO_FIREBASE",
+            authDomain: "o-teu-projeto.firebaseapp.com",
+            projectId: "o-teu-projeto",
+            storageBucket: "o-teu-projeto.appspot.com",
+            messagingSenderId: "00000000000",
+            appId: "1:000000000:web:00000"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+        const EMAIL_ADMIN_SUPREMO = "teu.email.admin@gmail.com";
+
+        window.abrirModalLogin = function() { document.getElementById('modal-login').style.display = 'flex'; };
+        window.fecharModalLogin = function() { document.getElementById('modal-login').style.display = 'none'; };
+        window.fazerLoginGoogle = async function() { try { await signInWithPopup(auth, provider); fecharModalLogin(); } catch (error) { console.error(error); } };
+        window.fazerLogout = async function() { await signOut(auth); location.reload(); };
+
+        onAuthStateChanged(auth, async (user) => {
+            const userMenuArea = document.getElementById('user-menu-area');
+            const linkPainelAdmin = document.getElementById('link-painel-admin');
+            if (user) {
+                let userRef = doc(db, "usuarios", user.uid);
+                let userSnap = await getDoc(userRef);
+                let papel = "jogador";
+                if (user.email === EMAIL_ADMIN_SUPREMO) {
+                    papel = "admin";
+                    if (!userSnap.exists()) await setDoc(userRef, { email: user.email, papel: "admin" });
+                } else if (userSnap.exists()) {
+                    papel = userSnap.data().papel || "jogador";
+                } else {
+                    await setDoc(userRef, { email: user.email, papel: "jogador" });
+                }
+                userMenuArea.innerHTML = `<span>👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
+                if (papel === "admin" && linkPainelAdmin) linkPainelAdmin.style.display = 'inline-block';
+            } else {
+                userMenuArea.innerHTML = `<button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em; background:#8b0000;">🔑 Logar</button>`;
+                if (linkPainelAdmin) linkPainelAdmin.style.display = 'none';
+            }
+        });
+    </script>
+
     <style>
         body {
             font-family: 'Lora', serif;
@@ -81,8 +132,23 @@
             margin-bottom: 15px;
             box-shadow: inset 0 0 15px rgba(181, 155, 108, 0.2);
         }
-
-        /* Caixa de Dica de Efeitos */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background: #f4ecd0;
+            border: 4px solid #4a2e18;
+            padding: 30px;
+            border-radius: 4px;
+            text-align: center;
+            max-width: 400px;
+        }
         .info-efeitos {
             background: #e2d2aa;
             border: 1px solid #b59b6c;
@@ -96,8 +162,6 @@
             font-family: 'Cinzel', serif;
             color: #8b0000;
         }
-
-        /* Barra de Ações do Topo */
         .top-action-bar {
             display: flex;
             justify-content: space-between;
@@ -124,11 +188,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             transition: background 0.2s;
         }
-        .btn-acao:hover {
-            background: #a00;
-        }
-
-        /* Listas de Magias em Colunas */
+        .btn-acao:hover { background: #a00; }
         .grid-magias {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -173,44 +233,31 @@
             font-weight: bold;
             margin-left: 5px;
         }
-
-        /* Regras de Impressão / PDF */
-        @media print {
-            @page {
-                size: A4;
-                margin: 10mm;
-            }
-            body {
-                background: #fff !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            .container {
-                box-shadow: none !important;
-                border: 2px solid #4a2e18 !important;
-                outline: none !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                padding: 15px !important;
-                margin: 0 auto !important;
-                background: #f4ecd0 !important;
-            }
-            .top-action-bar {
-                display: none !important;
-            }
-        }
     </style>
 </head>
 <body>
+
+<div class="modal-overlay" id="modal-login">
+    <div class="modal-box">
+        <h3 style="font-family:'Cinzel',serif; color:#8b0000; margin-top:0;">Portal de Khalmorya</h3>
+        <p style="font-size:0.9em; margin-bottom:20px;">Deseja fazer login com o Google?</p>
+        <button type="button" class="btn-acao" onclick="fazerLoginGoogle()" style="width:100%; margin-bottom:10px; background:#4a2e18;">🔑 Entrar com Google</button>
+        <button type="button" class="btn-acao" onclick="fecharModalLogin()" style="width:100%;">Fechar</button>
+    </div>
+</div>
+
 <!-- Menu de Navegação Global -->
-<div style="max-width: 950px; margin: 0 auto 15px auto; display: flex; justify-content: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em; flex-wrap: wrap;">
+<div style="max-width: 950px; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em; flex-wrap: wrap;">
     <a href="index.html" style="background: #4a2e18; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🏠 Início</a>
     <a href="guia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📖 Guia</a>
-    <a href="ficha.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🛡️ Ficha</a>
+    <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🛡️ Ficha</a>
     <a href="grimorio.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">✨ Magias</a>
     <a href="historia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🗺️ História & Mapa</a>
+    <a href="personagens.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📜 Personagens</a>
+    <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">⚙️ Painel Admin</a>
+    <div id="user-menu-area" style="display:inline-block; margin-left: 10px;">
+        <button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em;">🔑 Logar</button>
+    </div>
 </div>
 
 <div class="container">
@@ -222,7 +269,6 @@
         </div>
     </div>
 
-    <!-- Barra de Ações do Topo -->
     <div class="top-action-bar">
         <div>
             <span style="font-weight: bold; color: #8b0000;">✨ Artes Arcanas, Sagradas & Rituais</span>
@@ -232,15 +278,14 @@
         </div>
     </div>
 
-    <!-- Guia de Magias -->
     <div class="panel">
         <h2>Regras de Conjuração</h2>
         <p>Opções disponíveis para Magos e Paladinos em campo. Para lançar qualquer magia, gasta-se o custo indicado em Pontos de Magia (PM) e rola-se um teste baseado em <strong>d20 + Habilidade (H)</strong> (somando bônus se possuir a perícia <em>Mística</em>). Os danos ou curas causados utilizam dados de <strong>d6</strong>.</p>
         
         <div class="info-efeitos">
             <strong>💡 Guia Rápido de Efeitos:</strong><br>
-            • <strong>Utilidade:</strong> Focado em exploração e investigação. Resolve problemas práticos do cenário (como iluminar locais escuros ou revelar armadilhas e segredos mágicos).<br>
-            • <strong>Suporte / Controle:</strong> Focado em ajudar aliados ou atrapalhar inimigos (como conceder camuflagens, bônus em testes ou deixar oponentes temporariamente incapacitados).
+            • <strong>Utilidade:</strong> Focado em exploração e investigação. Resolve problemas práticos do cenário.<br>
+            • <strong>Suporte / Controle:</strong> Focado em ajudar aliados ou atrapalhar inimigos.
         </div>
 
         <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em; margin-top:20px;">Magias Simples (Disponíveis para Conjuradores e Paladinos)</h3>
@@ -253,17 +298,17 @@
             <div class="magia-item">
                 <strong>🛡️ Escudo Simples</strong> (Custo: 1 PM)<span class="badge-paladino">Paladino / Mago</span><br>
                 <em>Teste:</em> d20 + H | <em>Efeito:</em> +2 Defesa (Suporte)<br>
-                Cria barreira protetora rápida. <em>Regra do Paladino:</em> Se gastar 1 <strong>PA</strong> junto, o escudo estende-se para proteger também até 2 jogadores colados a ele.
+                Cria barreira protetora rápida.
             </div>
             <div class="magia-item">
                 <strong>💡 Luz Mística</strong> (Custo: 1 PM)<span class="badge-paladino">Paladino / Mago</span><br>
                 <em>Teste:</em> d20 + H | <em>Efeito:</em> Utilidade<br>
-                Faz um objeto brilhar como uma tocha mágica por até uma hora, iluminando ambientes escuros e revelando cantos ocultos.
+                Faz um objeto brilhar como uma tocha mágica por até uma hora.
             </div>
             <div class="magia-item">
                 <strong>⚖️ Bênção Menor</strong> (Custo: 1 PM)<span class="badge-paladino">Paladino / Mago</span><br>
                 <em>Teste:</em> d20 + H | <em>Efeito:</em> Suporte<br>
-                Concede um leve alento e bônus espiritual em testes imediatos para um aliado garantir sucesso em momentos cruciais.
+                Concede um leve alento e bônus espiritual em testes imediatos.
             </div>
         </div>
 
@@ -272,52 +317,52 @@
             <div class="magia-item">
                 <strong>✨ Cura Completa / Maior</strong> (Custo: 3 PM)<span class="badge-mago">Exclusivo Mago</span><br>
                 <em>Teste:</em> d20 + H | <em>Efeito:</em> 3d6 (Cura)<br>
-                Rituais profundos de restauração que fecham ferimentos graves instantaneamente.
+                Rituais profundos de restauração.
             </div>
             <div class="magia-item">
                 <strong>🛡️ Campo de Força Absoluto</strong> (Custo: 3 PM)<span class="badge-mago">Exclusivo Mago</span><br>
                 <em>Teste:</em> d20 + H | <em>Efeito:</em> +4 Defesa (Suporte)<br>
-                Ergue uma cúpula arcana impenetrável ao redor do grupo para conter ataques devastadores.
+                Ergue cúpula arcana impenetrável.
             </div>
             <div class="magia-item">
                 <strong>🔥 Bola de Fogo</strong> (Custo: 2 PM)<span class="badge-mago">Exclusivo Mago</span><br>
                 <em>Teste:</em> d20 + H (Acerto) | <em>Dano:</em> 2d6 (Fogo)<br>
-                Conjura chamas intensas que incendeiam o alvo e áreas próximas à distância.
+                Conjura chamas intensas à distância.
             </div>
             <div class="magia-item">
                 <strong>❄️ Raio de Gelo</strong> (Custo: 2 PM)<span class="badge-mago">Exclusivo Mago</span><br>
                 <em>Teste:</em> d20 + H (Acerto) | <em>Dano:</em> 1d6 (Frio)<br>
-                Dispara feixe congelante que causa dano e paralisa temporariamente o alvo (Controle).
+                Dispara feixe congelante.
             </div>
             <div class="magia-item">
                 <strong>⚡ Relâmpago</strong> (Custo: 3 PM)<span class="badge-mago">Exclusivo Mago</span><br>
                 <em>Teste:</em> d20 + H (Acerto) | <em>Dano:</em> 3d6 (Eletricidade)<br>
-                Descarga elétrica veloz que causa dano severo direto em um alvo prioritário.
+                Descarga elétrica veloz.
             </div>
             <div class="magia-item">
                 <strong>👁️ Visão Arcana Avançada</strong> (Custo: 2 PM)<span class="badge-mago">Exclusivo Mago</span><br>
                 <em>Teste:</em> d20 + H | <em>Efeito:</em> Utilidade<br>
-                Revela o invisível, ilusões complexas, fraquezas ocultas e a verdadeira natureza de criaturas místicas no ambiente.
+                Revela o invisível e ilusões.
             </div>
             <div class="magia-item">
                 <strong>💨 Invisibilidade Maior</strong> (Custo: 3 PM)<span class="badge-mago">Exclusivo Mago</span><br>
                 <em>Teste:</em> d20 + H | <em>Efeito:</em> Suporte<br>
-                O conjurador some completamente da visão e rastros mágicos, garantindo segurança total até decidir atacar.
+                Some completamente da visão.
             </div>
             <div class="magia-item">
                 <strong>💤 Sono Místico Profundo</strong> (Custo: 2 PM)<span class="badge-mago">Exclusivo Mago</span><br>
                 <em>Teste:</em> d20 + H (Acerto) | <em>Efeito:</em> Controle<br>
-                Induz alvos a um torpor profundo, tirando-os de combate se falharem em resistir.
+                Induz alvos a torpor profundo.
             </div>
             <div class="magia-item">
                 <strong>🦅 Voo Arcano</strong> (Custo: 2 PM)<span class="badge-mago">Exclusivo Mago</span><br>
                 <em>Teste:</em> d20 + H | <em>Efeito:</em> Utilidade / Movimento<br>
-                Permite levitação e voo real controlado para superar abismos e obstáculos físicos do cenário.
+                Permite levitação e voo controlado.
             </div>
             <div class="magia-item">
                 <strong>🔥 Muralha de Fogo Elemental</strong> (Custo: 3 PM)<span class="badge-mago">Exclusivo Mago</span><br>
                 <em>Teste:</em> d20 + H | <em>Dano:</em> 2d6 (Fogo) / Controle<br>
-                Cria uma barreira de chamas indomáveis que bloqueia passagens e consome inimigos que tentarem atravessá-la.
+                Barreira de chamas indomáveis.
             </div>
         </div>
     </div>

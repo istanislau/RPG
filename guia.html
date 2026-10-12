@@ -6,6 +6,57 @@
     <title>Guia Rápido - Vila de Khalmorya</title>
     <!-- Fontes Medievais -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "COLOQUE_AQUI_AS_SUAS_CREDENCIAIS_DO_FIREBASE",
+            authDomain: "o-teu-projeto.firebaseapp.com",
+            projectId: "o-teu-projeto",
+            storageBucket: "o-teu-projeto.appspot.com",
+            messagingSenderId: "00000000000",
+            appId: "1:000000000:web:00000"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+        const EMAIL_ADMIN_SUPREMO = "teu.email.admin@gmail.com";
+
+        window.abrirModalLogin = function() { document.getElementById('modal-login').style.display = 'flex'; };
+        window.fecharModalLogin = function() { document.getElementById('modal-login').style.display = 'none'; };
+        window.fazerLoginGoogle = async function() { try { await signInWithPopup(auth, provider); fecharModalLogin(); } catch (error) { console.error(error); } };
+        window.fazerLogout = async function() { await signOut(auth); location.reload(); };
+
+        onAuthStateChanged(auth, async (user) => {
+            const userMenuArea = document.getElementById('user-menu-area');
+            const linkPainelAdmin = document.getElementById('link-painel-admin');
+            if (user) {
+                let userRef = doc(db, "usuarios", user.uid);
+                let userSnap = await getDoc(userRef);
+                let papel = "jogador";
+                if (user.email === EMAIL_ADMIN_SUPREMO) {
+                    papel = "admin";
+                    if (!userSnap.exists()) await setDoc(userRef, { email: user.email, papel: "admin" });
+                } else if (userSnap.exists()) {
+                    papel = userSnap.data().papel || "jogador";
+                } else {
+                    await setDoc(userRef, { email: user.email, papel: "jogador" });
+                }
+                userMenuArea.innerHTML = `<span>👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
+                if (papel === "admin" && linkPainelAdmin) linkPainelAdmin.style.display = 'inline-block';
+            } else {
+                userMenuArea.innerHTML = `<button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em; background:#8b0000;">🔑 Logar</button>`;
+                if (linkPainelAdmin) linkPainelAdmin.style.display = 'none';
+            }
+        });
+    </script>
+
     <style>
         body {
             font-family: 'Lora', serif;
@@ -81,15 +132,40 @@
             margin-bottom: 15px;
             box-shadow: inset 0 0 15px rgba(181, 155, 108, 0.2);
         }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background: #f4ecd0;
+            border: 4px solid #4a2e18;
+            padding: 30px;
+            border-radius: 4px;
+            text-align: center;
+            max-width: 400px;
+        }
+        .btn-acao {
+            background: #8b0000;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85em;
+        }
+        .btn-acao:hover { background: #a00; }
         
-        /* Linha de Divisão Interna */
         .divider {
             border: none;
             border-top: 1px solid #b59b6c;
             margin: 25px 0 15px 0;
         }
-
-        /* Grid de Caixinhas Compactas */
         .grid-cards {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -114,8 +190,6 @@
             margin: 0;
             color: #4a2e18;
         }
-
-        /* Tags de Palavras-Chave */
         .tags-container {
             display: flex;
             flex-wrap: wrap;
@@ -135,13 +209,28 @@
     </style>
 </head>
 <body>
+
+<div class="modal-overlay" id="modal-login">
+    <div class="modal-box">
+        <h3 style="font-family:'Cinzel',serif; color:#8b0000; margin-top:0;">Portal de Khalmorya</h3>
+        <p style="font-size:0.9em; margin-bottom:20px;">Deseja fazer login com o Google?</p>
+        <button type="button" class="btn-acao" onclick="fazerLoginGoogle()" style="width:100%; margin-bottom:10px; background:#4a2e18;">🔑 Entrar com Google</button>
+        <button type="button" class="btn-acao" onclick="fecharModalLogin()" style="width:100%;">Fechar</button>
+    </div>
+</div>
+
 <!-- Menu de Navegação Global -->
-<div style="max-width: 950px; margin: 0 auto 15px auto; display: flex; justify-content: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em; flex-wrap: wrap;">
+<div style="max-width: 950px; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em; flex-wrap: wrap;">
     <a href="index.html" style="background: #4a2e18; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🏠 Início</a>
     <a href="guia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📖 Guia</a>
-    <a href="ficha.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🛡️ Ficha</a>
+    <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🛡️ Ficha</a>
     <a href="grimorio.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">✨ Magias</a>
     <a href="historia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🗺️ História & Mapa</a>
+    <a href="personagens.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📜 Personagens</a>
+    <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">⚙️ Painel Admin</a>
+    <div id="user-menu-area" style="display:inline-block; margin-left: 10px;">
+        <button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em;">🔑 Logar</button>
+    </div>
 </div>
 
 <div class="container">
@@ -153,10 +242,9 @@
         </div>
     </div>
 
-    <!-- Contexto e Plot em Palavras-Chave (Mantido Intacto) -->
     <div class="panel">
         <h2>Contexto de Campanha & O Plot</h2>
-        <p>Itens chaves, nomes e referências essenciais baseados nos registros oficiais da história:</p>
+        <p>Itens chaves, nomes e referências essenciais baseados nos registros oficiais da história[cite: 7]:</p>
         <div class="tags-container">
             <span class="tag">⚔️ Devoradores de Arton</span>
             <span class="tag">🛡️ Sociedade de Khalmyr</span>
@@ -171,14 +259,12 @@
         <p style="margin-top: 12px; font-size: 0.9em;"><em>Nota sobre la Insígnia:</em> Uma espada com uma balança de dois pratos (a força equilibrada pela justiça). Possui magia anciã que só permite reconhecimento entre membros verdadeiros da Sociedade. Deve ser marcada em algum objeto pessoal (colar, anel, adaga).</p>
     </div>
 
-    <!-- Guia de Preenchimento da Ficha -->
     <div class="panel">
         <h2>Guia de Preenchimento da Ficha</h2>
-        <p>Abaixo estão as orientações para montar a ficha.</p>
-        <p>Cada jogador começa com 10 pontos; gaste-os para "comprar" seus atributos base (os recursos são calculados automaticamente). Os pontos também devem ser usados para escolher suas perícias, vantagens e desvantagens.</p>
-        <p>Escolha sua raça (elas podem conceder pontos extras); cada raça possui suas vantagens únicas. Depois, escolha seu arquétipo (classe). O conjunto de ambos definirá como seu personagem age, sente e é visto pelas pessoas do mundo.</p>
+        <p>Abaixo estão as orientações para montar a ficha[cite: 6].</p>
+        <p>Cada jogador começa com 10 pontos; gaste-os para "comprar" seus atributos base (os recursos são calculados automaticamente). Os pontos também devem ser usados para escolher suas perícias, vantagens e desvantagens[cite: 6].</p>
+        <p>Escolha sua raça (elas podem conceder pontos extras); cada raça possui suas vantagens únicas. Depois, escolha seu arquétipo (classe). O conjunto de ambos definirá como seu personagem age, sente e é visto pelas pessoas do mundo[cite: 6].</p>
 
-        <!-- Atributos Base -->
         <h3 style="margin-top: 15px; font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Atributos Base</h3>
         <div class="grid-cards">
             <div class="card">
@@ -195,7 +281,6 @@
             </div>
         </div>
 
-        <!-- Recursos -->
         <h3 style="margin-top: 20px; font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Recursos</h3>
         <div class="grid-cards">
             <div class="card">
@@ -212,10 +297,8 @@
             </div>
         </div>
 
-        <!-- Linha de Divisão: Recursos -> Raças -->
         <hr class="divider">
 
-        <!-- Raças -->
         <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Raças (Vantagens Únicas)</h3>
         <div class="grid-cards">
             <div class="card">
@@ -244,10 +327,8 @@
             </div>
         </div>
 
-        <!-- Linha de Divisão: Raças -> Arquétipos -->
         <hr class="divider">
 
-        <!-- Arquétipos -->
         <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Arquétipos de Heróis (classes)</h3>
         <div class="grid-cards">
             <div class="card">
@@ -269,138 +350,10 @@
             <div class="card">
                 <h3>⚔️ Bárbaro / Guerreiro</h3>
                 <p>Especialista em força bruta, ímpeto implacável e destruição de linhas inimigas.</p>
-                <p>- O Bárbaro é bruto, bate antes de perguntar.</p>
-                <p>- O guerreiro segue um código, uma hierarquia.</p>
             </div>
             <div class="card">
                 <h3>🗡️ Ladino / Espião</h3>
                 <p>Focado em furtividade, ataques rápidos pelas sombras e desarme de armadilhas.</p>
-            </div>
-        </div>
-
-        <!-- Linha de Divisão: Arquétipos -> Perícias -->
-        <hr class="divider">
-
-        <!-- Perícias -->
-        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Perícias (1 pt cada)</h3>
-        <div class="grid-cards">
-            <div class="card">
-                <h3>⚔️ Luta</h3>
-                <p>Domínio de armas brancas, socos, pontapés e manobras ofensivas ou defensivas em combate direto.</p>
-            </div>
-            <div class="card">
-                <h3>👁️ Percepção</h3>
-                <p>Sentidos alertas para notar emboscadas, armadilhas, pistas ocultas e mentiras.</p>
-            </div>
-            <div class="card">
-                <h3>🌿 Medicina</h3>
-                <p>Capacidade de estabilizar ferimentos graves, tratar enfermidades e fazer curativos de campo.</p>
-            </div>
-            <div class="card">
-                <h3>✨ Mística</h3>
-                <p>Estudo e compreensão de rituais, entidades arcanas, criaturas mágicas e feitiços.</p>
-            </div>
-            <div class="card">
-                <h3>🏕️ Sustento</h3>
-                <p>Habilidade de rastrear presas, caçar, encontrar abrigo e sobreviver em ermos selvagens.</p>
-            </div>
-            <div class="card">
-                <h3>🗣️ Influência</h3>
-                <p>Eloqüência para negociar, liderar companheiros, barganhar ou intimidar adversários.</p>
-            </div>
-        </div>
-
-        <!-- Linha de Divisão: Perícias -> Vantagens -->
-        <hr class="divider">
-
-        <!-- Vantagens -->
-        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Vantagens (1 pt cada)</h3>
-        <div class="grid-cards">
-            <div class="card">
-                <h3>⚡ Ágil</h3>
-                <p>Reflexos fora do comum. Concede bônus em testes ágeis.</p>
-                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a desvantagem Atrapalhado.</p>
-            </div>
-            <div class="card">
-                <h3>💥 Ataque Esp. (Potente)</h3>
-                <p>Força concentrada. Gasta 1 PM para somar temporariamente +2 de Poder em um ataque.</p>
-            </div>
-            <div class="card">
-                <h3>🎯 Ataque Esp. (Perigoso)</h3>
-                <p>Golpe cirúrgico e letal. Gasta 1 PM para garantir efeitos críticos ampliados.</p>
-            </div>
-            <div class="card">
-                <h3>🛡️ Defesa Esp. (Esquiva)</h3>
-                <p>Agilidade defensiva. Gasta 2 PM para usar Habilidade no lugar de Resistência ao defender-se.</p>
-            </div>
-            <div class="card">
-                <h3>🧱 Defesa Esp. (Tenaz)</h3>
-                <p>Postura firme. Gasta 1 PM para receber +2 bônus em sua Defesa no turno.</p>
-            </div>
-            <div class="card">
-                <h3>❤️ Vigoroso</h3>
-                <p>Vitalidade impressionante. Concede bônus em saúde e testes de vigor.</p>
-                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a desvantagem Frágil.</p>
-            </div>
-            <div class="card" style="grid-column: span 2;">
-                <h3>💪 Forte</h3>
-                <p>Músculos imponentes. Concede bônus em esforço e testes de força pura.</p>
-                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a desvantagem Fracote.</p>
-            </div>
-        </div>
-
-        <!-- Linha de Divisão: Vantagens -> Desvantagens -->
-        <hr class="divider">
-
-        <!-- Desvantagens -->
-        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Desvantagens</h3>
-        <p style="font-size: 0.85em; font-style: italic; color: #554033; margin-top: -5px; margin-bottom: 12px;">Cada desvantagem adiciona 1 ponto extra para ser gasto na ficha, com um limite máximo de 2 pontos bônus.</p>
-        <div class="grid-cards">
-            <div class="card">
-                <h3>📜 Código dos Heróis</h3>
-                <p>Juramento sagrado: jamais recusar ajuda a quem pede, nunca atacar covardemente e sempre cumprir a palavra.</p>
-            </div>
-            <div class="card">
-                <h3>⚖️ Código do Combate</h3>
-                <p>Honra marcial estrita: nunca atacar oponentes caídos, desarmados ou em desvantagem numérica flagrante.</p>
-            </div>
-            <div class="card">
-                <h3>🌀 Atrapalhado</h3>
-                <p>Falta de coordenação motora crônica.</p>
-                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a vantagem Ágil.</p>
-            </div>
-            <div class="card">
-                <h3>🏋️ Fracote</h3>
-                <p>Estrutura física deficiente para cargas e força bruta.</p>
-                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a vantagem Forte.</p>
-            </div>
-            <div class="card" style="grid-column: span 2;">
-                <h3>🥀 Frágil</h3>
-                <p>Constituição física delicada contra venenos, fadiga e doenças.</p>
-                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a vantagem Vigoroso.</p>
-            </div>
-        </div>
-
-        <!-- Linha de Divisão: Desvantagens -> Mecânica de Jogo -->
-        <hr class="divider">
-
-        <!-- Como Funciona o Jogo (Mecânica Híbrida d20 + d6) -->
-        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1.1em; margin-top: 20px;">🎲 Como Funciona o Jogo (Mecânica Básica)</h3>
-        <p style="font-size: 0.9em; margin-bottom: 10px;">Para tornar a aventura dinâmica utilizamos dois tipos de dados na mesa:</p>
-        
-        <div class="grid-cards" style="margin-top: 10px;">
-            <div class="card">
-                <h3>🎯 Testes e Ações (Dado d20)</h3>
-                <p>Sempre que seu personagem tentar algo arriscado (atacar, saltar um abismo, investigar, negociar), você rolará <strong>1d20</strong>.</p>
-                <p style="margin-top: 6px;">🔹 <strong>A Regra de Ouro:</strong> O Mestre definirá a dificuldade (ex: 12). Você joga o d20 e soma o seu Atributo correspondente (P, H ou R). Se o total for igual ou maior que a dificuldade, você <strong>consegue</strong>!</p>
-                <p style="margin-top: 6px;">⭐ <strong>Perícias:</strong> Se você tiver a perícia certa para a ação, ganha um bônus fixo no teste.</p>
-                <p style="margin-top: 6px;">🔥 <strong>Críticos:</strong> Tirar <strong>20</strong> no d20 é um sucesso espetacular com bônus máximo. Tirar <strong>1</strong> é uma falha crítica desastrosa!</p>
-            </div>
-            <div class="card">
-                <h3>⚔️ Danos de Armas e Magias (Dado d6)</h3>
-                <p>Quando você acerta um golpe com sua arma ou dispara uma magia de combate, usamos os tradicionais <strong>dados de 6 faces (d6)</strong> para calcular o estrago.</p>
-                <p style="margin-top: 6px;">🔹 Cada arma ou feitiço possui uma quantidade específica de d6 para rolar e subtrair diretamente dos Pontos de Vida (PV) do oponente.</p>
-                <p style="margin-top: 6px;">🔹 É rápido, tático e fácil de somar na hora do combate!</p>
             </div>
         </div>
     </div>

@@ -6,6 +6,57 @@
     <title>História e Mapa Interativo - Vila de Khalmorya</title>
     <!-- Fontes Medievais -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "COLOQUE_AQUI_AS_SUAS_CREDENCIAIS_DO_FIREBASE",
+            authDomain: "o-teu-projeto.firebaseapp.com",
+            projectId: "o-teu-projeto",
+            storageBucket: "o-teu-projeto.appspot.com",
+            messagingSenderId: "00000000000",
+            appId: "1:000000000:web:00000"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+        const EMAIL_ADMIN_SUPREMO = "teu.email.admin@gmail.com";
+
+        window.abrirModalLogin = function() { document.getElementById('modal-login').style.display = 'flex'; };
+        window.fecharModalLogin = function() { document.getElementById('modal-login').style.display = 'none'; };
+        window.fazerLoginGoogle = async function() { try { await signInWithPopup(auth, provider); fecharModalLogin(); } catch (error) { console.error(error); } };
+        window.fazerLogout = async function() { await signOut(auth); location.reload(); };
+
+        onAuthStateChanged(auth, async (user) => {
+            const userMenuArea = document.getElementById('user-menu-area');
+            const linkPainelAdmin = document.getElementById('link-painel-admin');
+            if (user) {
+                let userRef = doc(db, "usuarios", user.uid);
+                let userSnap = await getDoc(userRef);
+                let papel = "jogador";
+                if (user.email === EMAIL_ADMIN_SUPREMO) {
+                    papel = "admin";
+                    if (!userSnap.exists()) await setDoc(userRef, { email: user.email, papel: "admin" });
+                } else if (userSnap.exists()) {
+                    papel = userSnap.data().papel || "jogador";
+                } else {
+                    await setDoc(userRef, { email: user.email, papel: "jogador" });
+                }
+                userMenuArea.innerHTML = `<span>👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
+                if (papel === "admin" && linkPainelAdmin) linkPainelAdmin.style.display = 'inline-block';
+            } else {
+                userMenuArea.innerHTML = `<button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em; background:#8b0000;">🔑 Logar</button>`;
+                if (linkPainelAdmin) linkPainelAdmin.style.display = 'none';
+            }
+        });
+    </script>
+
     <style>
         body {
             font-family: 'Lora', serif;
@@ -82,8 +133,23 @@
             margin-bottom: 15px;
             box-shadow: inset 0 0 15px rgba(181, 155, 108, 0.2);
         }
-
-        /* Barra de Ações do Topo */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background: #f4ecd0;
+            border: 4px solid #4a2e18;
+            padding: 30px;
+            border-radius: 4px;
+            text-align: center;
+            max-width: 400px;
+        }
         .top-action-bar {
             display: flex;
             justify-content: space-between;
@@ -110,11 +176,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             transition: background 0.2s;
         }
-        .btn-acao:hover {
-            background: #a00;
-        }
-
-        /* Container do Mapa Interativo com Zoom, Pan e Destaque */
+        .btn-acao:hover { background: #a00; }
         .map-wrapper {
             position: relative;
             width: 100%;
@@ -128,9 +190,7 @@
             box-sizing: border-box;
             cursor: grab;
         }
-        .map-wrapper:active {
-            cursor: grabbing;
-        }
+        .map-wrapper:active { cursor: grabbing; }
         .map-container {
             width: 100%;
             height: 100%;
@@ -138,17 +198,13 @@
             transform-origin: center center;
             transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        .map-container.dragging {
-            transition: none;
-        }
+        .map-container.dragging { transition: none; }
         .map-container img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             display: block;
         }
-
-        /* Marcador de Destaque Pulsante */
         .map-marker {
             position: absolute;
             width: 40px;
@@ -168,8 +224,6 @@
             50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.3; }
             100% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; }
         }
-
-        /* Controles flutuantes de Zoom no Mapa */
         .map-controls {
             position: absolute;
             top: 10px;
@@ -191,11 +245,7 @@
             border-radius: 2px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
-        .map-controls button:hover {
-            background: #8b0000;
-        }
-
-        /* Legendas Clicáveis */
+        .map-controls button:hover { background: #8b0000; }
         .grid-legendas {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -222,8 +272,6 @@
             color: #8b0000;
             font-family: 'Cinzel', serif;
         }
-
-        /* Destaque da Insígnia */
         .insignia-box {
             background: #e2d2aa;
             border: 1px solid #b59b6c;
@@ -236,44 +284,31 @@
             font-family: 'Cinzel', serif;
             color: #8b0000;
         }
-
-        /* Regras de Impressão / PDF */
-        @media print {
-            @page {
-                size: A4;
-                margin: 10mm;
-            }
-            body {
-                background: #fff !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            .container {
-                box-shadow: none !important;
-                border: 2px solid #4a2e18 !important;
-                outline: none !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                padding: 15px !important;
-                margin: 0 auto !important;
-                background: #f4ecd0 !important;
-            }
-            .top-action-bar, .map-controls, .map-marker {
-                display: none !important;
-            }
-        }
     </style>
 </head>
 <body>
+
+<div class="modal-overlay" id="modal-login">
+    <div class="modal-box">
+        <h3 style="font-family:'Cinzel',serif; color:#8b0000; margin-top:0;">Portal de Khalmorya</h3>
+        <p style="font-size:0.9em; margin-bottom:20px;">Deseja fazer login com o Google?</p>
+        <button type="button" class="btn-acao" onclick="fazerLoginGoogle()" style="width:100%; margin-bottom:10px; background:#4a2e18;">🔑 Entrar com Google</button>
+        <button type="button" class="btn-acao" onclick="fecharModalLogin()" style="width:100%;">Fechar</button>
+    </div>
+</div>
+
 <!-- Menu de Navegação Global -->
-<div style="max-width: 950px; margin: 0 auto 15px auto; display: flex; justify-content: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em; flex-wrap: wrap;">
+<div style="max-width: 950px; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em; flex-wrap: wrap;">
     <a href="index.html" style="background: #4a2e18; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🏠 Início</a>
     <a href="guia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📖 Guia</a>
-    <a href="ficha.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🛡️ Ficha</a>
+    <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🛡️ Ficha</a>
     <a href="grimorio.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">✨ Magias</a>
     <a href="historia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🗺️ História & Mapa</a>
+    <a href="personagens.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📜 Personagens</a>
+    <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">⚙️ Painel Admin</a>
+    <div id="user-menu-area" style="display:inline-block; margin-left: 10px;">
+        <button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em;">🔑 Logar</button>
+    </div>
 </div>
 
 <div class="container">
@@ -285,7 +320,6 @@
         </div>
     </div>
 
-    <!-- Barra de Ações do Topo -->
     <div class="top-action-bar">
         <div>
             <span style="font-weight: bold; color: #8b0000;">📖 Plot Oficial & Registros da Batalha</span>
@@ -295,10 +329,9 @@
         </div>
     </div>
 
-    <!-- Plot da História -->
     <div class="panel">
         <h2>Plot da História</h2>
-        <p>Os tempos eram sombrios, os <strong>Devoradores de Arton</strong> vinham expandindo sua perversa dominação das vilas do norte, em cada lugar que passavam o cheiro de sangue fresco dominava os olfatos. A visão era assustadora, o ambiente tomado de fuligem não permitia saber se era dia ou noite mas ao fundo via se apenas morte, fogo, destruição e terror. As almas choravam naquele lugar.</p>
+        <p>Os tempos eram sombrios, os <strong>Devoradores de Arton</strong> vinham expandindo sua perversa dominação das vilas do norte, em cada lugar que passavam o cheiro de sangue fresco dominava os olfatos[cite: 7]. A visão era assustadora, o ambiente tomado de fuligem não permitia saber se era dia ou noite mas ao fundo via se apenas morte, fogo, destruição e terror. As almas choravam naquele lugar.</p>
         <p>Os sobreviventes eram escravizados e sob dominação de terror eram obrigados a fazer os piores serviços, aqueles que nem o mais desprezível dos Goblins faria, os Devoradores chamavam esses escravos de cavalos das trevas.</p>
         <p>Do sul, os sete reinos reuniram seus melhores grupos de heróis e assim deu início a <strong>Sociedade de Khalmyr</strong>, a última esperança do mundo livre. A eles e somente a eles foi permitido portar a <strong>insígnia dos servos de Khalmyr</strong> e para que nenhum ímpio a porte a insígnia dos membros da Sociedade foi abençoada com magia anciã, assim só um outro membro da Sociedade se portando a sua insígnia reconhece outro membro verdadeiro.</p>
         <p>Aos poucos eles começaram a ganhar espaço e impor derrotas aos Devoradores, um a um os líderes deles eram derrotados mas infelizmente o custo era pago com as vidas dos membros da Sociedade.</p>
@@ -313,10 +346,9 @@
         </div>
     </div>
 
-    <!-- Mapa Interativo com Zoom, Pan e Marcador -->
     <div class="panel">
         <h2>Mapa Interativo de Khalmorya</h2>
-        <p>Clique em qualquer ponto da legenda para dar zoom e destacar o local exato com o anel pulsante vermelho:</p>
+        <p>Clique em qualquer ponto da legenda para dar zoom e destacar o local exato com o anel pulsante vermelho[cite: 7]:</p>
         
         <div class="map-wrapper" id="mapWrapper">
             <div class="map-controls">
@@ -345,7 +377,7 @@
         </div>
 
         <div style="margin-top: 12px; font-size: 0.85em; color: #5c4033;">
-            <strong>Distritos Principais:</strong> Infantes | Campos Alto | Bairro Baixo | Entre Pontes.
+            <strong>Distritos Principais:</strong> Infantes | Campos Alto | Bairro Baixo | Entre Pontes[cite: 7].
         </div>
     </div>
 </div>
@@ -354,7 +386,6 @@
     let escalaAtual = 1;
     let posXAtual = 50;
     let posYAtual = 50;
-
     let isDragging = false;
     let startX, startY;
 
@@ -371,62 +402,39 @@
         posXAtual = x;
         posYAtual = y;
         atualizarMapa();
-
         marker.style.left = x + '%';
         marker.style.top = y + '%';
         marker.style.display = 'block';
     }
 
     function zoomIn() {
-        if (escalaAtual < 4) {
-            escalaAtual += 0.5;
-            atualizarMapa();
-        }
+        if (escalaAtual < 4) { escalaAtual += 0.5; atualizarMapa(); }
     }
 
     function zoomOut() {
         if (escalaAtual > 1) {
             escalaAtual -= 0.5;
-            if (escalaAtual === 1) {
-                posXAtual = 50;
-                posYAtual = 50;
-                marker.style.display = 'none';
-            }
+            if (escalaAtual === 1) { posXAtual = 50; posYAtual = 50; marker.style.display = 'none'; }
             atualizarMapa();
         }
     }
 
     function resetZoom() {
-        escalaAtual = 1;
-        posXAtual = 50;
-        posYAtual = 50;
-        marker.style.display = 'none';
-        atualizarMapa();
+        escalaAtual = 1; posXAtual = 50; posYAtual = 50; marker.style.display = 'none'; atualizarMapa();
     }
 
-    // Funcionalidade de Arrastar (Pan) com o rato ou toque
     wrapper.addEventListener('mousedown', (e) => {
-        if (escalaAtual > 1) {
-            isDragging = true;
-            mapa.classList.add('dragging');
-            startX = e.clientX;
-            startY = e.clientY;
-        }
+        if (escalaAtual > 1) { isDragging = true; mapa.classList.add('dragging'); startX = e.clientX; startY = e.clientY; }
     });
 
-    window.addEventListener('mouseup', () => {
-        isDragging = false;
-        mapa.classList.remove('dragging');
-    });
+    window.addEventListener('mouseup', () => { isDragging = false; mapa.classList.remove('dragging'); });
 
     wrapper.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
         let deltaX = (e.clientX - startX) / escalaAtual;
         let deltaY = (e.clientY - startY) / escalaAtual;
-        
         posXAtual -= deltaX * 0.1;
         posYAtual -= deltaY * 0.1;
-
         startX = e.clientX;
         startY = e.clientY;
         atualizarMapa();
