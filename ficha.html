@@ -64,6 +64,7 @@
             }
         });
 
+        // --- SALVAR FICHA NA NUVEM (Incluindo Armas e Notas) ---
         window.salvarFichaNuvem = async function() {
             const user = auth.currentUser;
             if (!user) {
@@ -71,6 +72,20 @@
                 abrirModalLogin();
                 return;
             }
+
+            // Recolher as armas da tabela
+            let armas = [];
+            document.querySelectorAll('#tabela-armas tbody tr').forEach(linha => {
+                let selectArma = linha.querySelector('select');
+                if (selectArma) {
+                    armas.push({
+                        tipo: selectArma.value,
+                        atributo: linha.querySelector('.td-attr') ? linha.querySelector('.td-attr').innerText : '',
+                        testeDano: linha.querySelector('.td-teste') ? linha.querySelector('.td-teste').innerText : '',
+                        efeito: linha.querySelector('.td-efeito') ? linha.querySelector('.td-efeito').innerText : ''
+                    });
+                }
+            });
 
             const urlParams = new URLSearchParams(window.location.search);
             let fichaId = urlParams.get('id') || user.uid + "_" + Date.now();
@@ -85,6 +100,8 @@
                 h: document.getElementById('attr-h').value,
                 r: document.getElementById('attr-r').value,
                 pvAtual: document.getElementById('res-pv-atual').value,
+                armas: armas,
+                notas: document.getElementById('notas-heroi').value,
                 atualizadoEm: new Date()
             };
 
@@ -100,6 +117,7 @@
             }
         };
 
+        // --- CARREGAR FICHA DA NUVEM (Incluindo Armas e Notas) ---
         window.carregarFichaPorId = async function(id) {
             try {
                 let docSnap = await getDoc(doc(db, "fichas", id));
@@ -112,6 +130,24 @@
                     document.getElementById('attr-h').value = d.h || 0;
                     document.getElementById('attr-r').value = d.r || 0;
                     document.getElementById('res-pv-atual').value = d.pvAtual || 0;
+                    document.getElementById('notas-heroi').value = d.notas || '';
+
+                    // Limpar a tabela de armas atual e repor as guardadas
+                    let tbody = document.querySelector('#tabela-armas tbody');
+                    tbody.innerHTML = '';
+
+                    if (d.armas && Array.isArray(d.armas)) {
+                        d.armas.forEach(armaSalva => {
+                            adicionarArma(); // Cria a linha vazia
+                            let ultimaLinha = tbody.lastElementChild;
+                            let select = ultimaLinha.querySelector('select');
+                            if (select) {
+                                select.value = armaSalva.tipo;
+                                atualizarInfoArma(select); // Atualiza os textos da coluna
+                            }
+                        });
+                    }
+
                     calcularTudo();
                 }
             } catch (e) {
