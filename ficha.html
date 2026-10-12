@@ -118,6 +118,58 @@
                 console.error("Erro ao carregar ficha:", e);
             }
         };
+        // Função para descarregar o backup da ficha em formato JSON
+        window.baixarBackupFicha = function() {
+            let dadosFicha = {
+                nomeHeroi: document.getElementById('nome-heroi').value || 'SemNome',
+                arquetipo: document.getElementById('arquetipo').value,
+                raca: document.getElementById('raca').value,
+                p: document.getElementById('attr-p').value,
+                h: document.getElementById('attr-h').value,
+                r: document.getElementById('attr-r').value,
+                pvAtual: document.getElementById('res-pv-atual').value,
+                notas: document.getElementById('notas-heroi').value
+            };
+
+            let blob = new Blob([JSON.stringify(dadosFicha, null, 2)], { type: "application/json" });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = `${dadosFicha.nomeHeroi.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_backup.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        // Função para excluir a ficha da nuvem (Firestore)
+        window.deletarFichaNuvem = async function() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Precisas de estar logado para excluir uma ficha.");
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            let fichaId = urlParams.get('id');
+
+            if (!fichaId) {
+                alert("Esta ficha ainda não foi salva na nuvem.");
+                return;
+            }
+
+            if (confirm("Tens a certeza absoluta que queres excluir esta ficha da nuvem? Esta ação não pode ser desfeita.")) {
+                try {
+                    // Importa o deleteDoc caso ainda não o tenhas no topo do script
+                    import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then(async ({ deleteDoc, doc }) => {
+                        await deleteDoc(doc(db, "fichas", fichaId));
+                        alert("Ficha excluída com sucesso!");
+                        window.location.href = "index.html";
+                    });
+                } catch (e) {
+                    console.error("Erro ao excluir ficha:", e);
+                    alert("Erro ao excluir a ficha.");
+                }
+            }
+        };
     </script>
 
     <style>
@@ -564,6 +616,8 @@
         </div>
         <div>
             <button type="button" class="btn-pdf" onclick="salvarFichaNuvem()" style="background:#205493; margin-right:5px;">💾 Salvar Nuvem</button>
+            <button type="button" class="btn-pdf" onclick="baixarBackupFicha()" style="background:#7c5a3b; margin-right:5px;" title="Descarregar cópia de segurança em ficheiro">💾 Backup JSON</button>
+            <button type="button" class="btn-pdf" onclick="deletarFichaNuvem()" style="background:#8b0000; margin-right:5px;" title="Apagar ficha da nuvem">🗑️ Excluir</button>
             <button type="button" class="btn-pdf" onclick="gerarPDF()">📜 Gerar PDF</button>
         </div>
     </div>
