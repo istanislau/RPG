@@ -6,7 +6,7 @@
     <title>Início - Vila de Khalmorya</title>
     <!-- Fontes Medievais -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
     
     <!-- Firebase SDK -->
     <script type="module">
@@ -89,143 +89,43 @@
             background-image: radial-gradient(#2b1b11, #0d0804);
             color: #2c1810;
             line-height: 1.5;
-            padding: 15px;
+            padding: 10px;
         }
         .container {
             max-width: 900px;
-            margin: 20px auto;
+            margin: 15px auto;
             background: #f4ecd0;
             background-image: linear-gradient(to bottom, #f7f1df, #efe2c0);
-            padding: 40px;
+            padding: 20px;
             border-radius: 4px;
             box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 50px rgba(139,69,19,0.15);
             border: 6px solid #4a2e18;
             outline: 2px solid #8c6d46;
-            outline-offset: -10px;
+            outline-offset: -8px;
             text-align: center;
+            box-sizing: border-box;
         }
-        .header img {
-            max-width: 110px;
-            filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4));
-            margin-bottom: 15px;
-        }
-        h1 {
-            font-family: 'Cinzel', serif;
-            color: #8b0000;
-            font-size: 2.3em;
-            margin: 0;
-            line-height: 1.1;
-        }
-        .subtitle {
-            font-family: 'Cinzel', serif;
-            color: #5c4033;
-            font-size: 1em;
-            letter-spacing: 3px;
-            margin-top: 5px;
-            margin-bottom: 30px;
-        }
-        p {
-            font-size: 1em;
-            color: #4a2e18;
-            max-width: 700px;
-            margin: 0 auto 30px auto;
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-box {
-            background: #f4ecd0;
-            border: 4px solid #4a2e18;
-            padding: 30px;
-            border-radius: 4px;
-            text-align: center;
-            max-width: 400px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-        }
-        /* Grid de Navegação */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        .menu-card {
-            background: #fdfbf7;
-            border: 2px solid #b59b6c;
-            padding: 20px;
-            border-radius: 4px;
-            text-decoration: none;
-            color: #2c1810;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s, background 0.2s, border-color 0.2s;
-        }
-        .menu-card:hover {
-            transform: translateY(-3px);
-            background: #fcf8ee;
-            border-color: #8b0000;
-        }
-        .menu-card h3 {
-            font-family: 'Cinzel', serif;
-            color: #8b0000;
-            font-size: 1.2em;
-            margin: 0 0 8px 0;
-        }
-        .menu-card p {
-            font-size: 0.85em;
-            color: #5c4033;
-            margin: 0;
-        }
-        /* Carrossel de Fichas */
-        .carrossel-container {
-            max-width: 700px;
-            margin: 0 auto 30px auto;
-            text-align: left;
-            background: rgba(255, 253, 245, 0.7);
-            border: 1px solid #b59b6c;
-            padding: 15px;
-            border-radius: 4px;
-        }
-        .carrossel-track {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-        .carrossel-card {
-            min-width: 180px;
-            background: #fdfbf7;
-            border: 1px solid #b59b6c;
-            padding: 12px;
-            border-radius: 3px;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: border-color 0.2s;
-        }
-        .carrossel-card:hover {
-            border-color: #8b0000;
-        }
-        .btn-acao {
-            background: #8b0000;
-            color: #fff;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 2px;
-            cursor: pointer;
-            font-family: 'Cinzel', serif;
-            font-size: 0.85em;
-        }
+        .header img { max-width: 85px; filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4)); margin-bottom: 10px; }
+        h1 { font-family: 'Cinzel', serif; color: #8b0000; font-size: 1.6em; margin: 0; line-height: 1.1; }
+        .subtitle { font-family: 'Cinzel', serif; color: #5c4033; font-size: 0.9em; letter-spacing: 2px; margin-top: 5px; margin-bottom: 20px; }
+        p { font-size: 0.9em; color: #4a2e18; max-width: 700px; margin: 0 auto 20px auto; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; box-sizing: border-box; }
+        .modal-box { background: #f4ecd0; border: 4px solid #4a2e18; padding: 20px; border-radius: 4px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 700px; margin: 0 auto; }
+        .menu-card { background: #fdfbf7; border: 2px solid #b59b6c; padding: 15px; border-radius: 4px; text-decoration: none; color: #2c1810; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.2s, background 0.2s, border-color 0.2s; box-sizing: border-box; }
+        .menu-card:hover { transform: translateY(-3px); background: #fcf8ee; border-color: #8b0000; }
+        .menu-card h3 { font-family: 'Cinzel', serif; color: #8b0000; font-size: 1.1em; margin: 0 0 6px 0; }
+        .menu-card p { font-size: 0.8em; color: #5c4033; margin: 0; }
+        .carrossel-container { max-width: 700px; margin: 0 auto 20px auto; text-align: left; background: rgba(255, 253, 245, 0.7); border: 1px solid #b59b6c; padding: 12px; border-radius: 4px; }
+        .carrossel-track { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+        .carrossel-card { min-width: 160px; background: #fdfbf7; border: 1px solid #b59b6c; padding: 10px; border-radius: 3px; cursor: pointer; }
+        .btn-acao { background: #8b0000; color: #fff; border: none; padding: 5px 10px; border-radius: 2px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.8em; }
         .btn-acao:hover { background: #a00; }
+
         @media (max-width: 600px) {
-            .menu-grid {
-                grid-template-columns: 1fr;
-            }
+            .menu-grid { grid-template-columns: 1fr; }
+            .container { padding: 12px; border-width: 3px; outline-offset: -4px; }
+            h1 { font-size: 1.3em; }
         }
     </style>
 </head>
@@ -234,15 +134,13 @@
 <div class="modal-overlay" id="modal-login">
     <div class="modal-box">
         <h3 style="font-family:'Cinzel',serif; color:#8b0000; margin-top:0;">Portal de Khalmorya</h3>
-        <p style="font-size:0.9em; margin-bottom:20px;">Deseja fazer login com o Google para gerir as suas fichas ou continuar sem login?</p>
+        <p style="font-size:0.9em; margin-bottom:20px;">Deseja fazer login com o Google para gerir as suas fichas ou continuar?</p>
         <button type="button" class="btn-acao" onclick="fazerLoginGoogle()" style="width:100%; margin-bottom:10px; background:#4a2e18;">🔑 Entrar com Google</button>
         <button type="button" class="btn-acao" onclick="fecharModalLogin()" style="width:100%;">Continuar sem login</button>
     </div>
 </div>
 
-<!-- Menu Superior Global / Conta -->
-
-<div style="max-width: 900px; margin: 0 auto 15px auto; display: flex; justify-content: flex-end; align-items: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em;">
+<div style="max-width: 900px; margin: 0 auto 10px auto; display: flex; justify-content: flex-end; align-items: center; gap: 8px; font-family: 'Cinzel', serif; font-size: 0.8em; flex-wrap: wrap;">
     <a href="personagens.html" id="link-personagens" style="display:none; background:#7c5a3b; color:#f4ecd0; padding:4px 8px; border-radius:2px; text-decoration:none;">📜 Personagens</a>
     <a href="painel.html" id="link-painel-admin" style="display:none; background:#8b0000; color:#fff; padding:4px 8px; border-radius:2px; text-decoration:none;">⚙️ Painel Admin</a>
     <div id="user-menu-area" style="display:inline-block;">
@@ -257,30 +155,29 @@
         <div class="subtitle">Central de Ferramentas da Aventura</div>
     </div>
 
-    <!-- Carrossel de Fichas do Utilizador Logado -->
     <div id="secao-carrossel" class="carrossel-container" style="display:none;">
-        <h3 style="font-family:'Cinzel',serif; color:#8b0000; font-size:1em; margin:0 0 10px 0;">🛡️ Os Teus Heróis (Acesso Rápido)</h3>
+        <h3 style="font-family:'Cinzel',serif; color:#8b0000; font-size:0.95em; margin:0 0 8px 0;">🛡️ Os Teus Heróis (Acesso Rápido)</h3>
         <div class="carrossel-track" id="carrossel-track"></div>
     </div>
 
-    <p>Bem-vindo à central de registros da <strong>Sociedade de Khalmyr</strong>. Escolha abaixo o documento ou ferramenta que deseja acessar para preparar seu herói ou guiar sua sessão de jogo:</p>
+    <p>Bem-vindo à central de registros da <strong>Sociedade de Khalmyr</strong>. Escolha abaixo a ferramenta que deseja acessar:</p>
 
     <div class="menu-grid">
         <a href="guia.html" class="menu-card">
             <h3>📖 Guia Rápido</h3>
-            <p>Regras básicas, criação de heróis, raças, arquétipos, vantagens e desvantagens.</p>
+            <p>Regras básicas, raças, arquétipos e vantagens.</p>
         </a>
         <a href="ficha.html" class="menu-card" onclick="sessionStorage.setItem('veio_do_index', 'true')">
             <h3>🛡️ Ficha de Herói</h3>
-            <p>Ficha digital interativa com cálculo automático de pontos, recursos e inventário de armas.</p>
+            <p>Ficha digital interativa com cálculo automático e inventário.</p>
         </a>
         <a href="grimorio.html" class="menu-card">
             <h3>✨ Grimório de Magias</h3>
-            <p>Manual completo contendo magias simples, sagradas de paladinos e avançadas de magos.</p>
+            <p>Manual contendo magias simples, sagradas e avançadas.</p>
         </a>
         <a href="historia.html" class="menu-card">
             <h3>🗺️ História & Mapa</h3>
-            <p>O plot oficial da campanha, crônicas da guerra e o mapa interativo com zoom e destaques.</p>
+            <p>Plot oficial da campanha e mapa interativo.</p>
         </a>
     </div>
 </div>

@@ -6,7 +6,7 @@
     <title>Guia Rápido - Vila de Khalmorya</title>
     <!-- Fontes Medievais -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
     
     <!-- Firebase SDK -->
     <script type="module">
@@ -40,11 +40,7 @@
                 userMenuArea.innerHTML = `<span style="color:#f4ecd0; font-weight:bold;">👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
                 
                 if (linkPersonagens) linkPersonagens.style.display = 'inline-block';
-                if (papel === "admin" && linkPainelAdmin) {
-                    linkPainelAdmin.style.display = 'inline-block';
-                } else if (linkPainelAdmin) {
-                    linkPainelAdmin.style.display = 'none';
-                }
+                if (papel === "admin" && linkPainelAdmin) linkPainelAdmin.style.display = 'inline-block';
             } else {
                 userMenuArea.innerHTML = `<button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em; background:#8b0000;">🔑 Logar</button>`;
                 if (linkPainelAdmin) linkPainelAdmin.style.display = 'none';
@@ -60,147 +56,78 @@
             background-image: radial-gradient(#2b1b11, #0d0804);
             color: #2c1810;
             line-height: 1.5;
-            padding: 15px;
+            padding: 10px;
         }
         .container {
             max-width: 950px;
             margin: 0 auto;
             background: #f4ecd0;
             background-image: linear-gradient(to bottom, #f7f1df, #efe2c0);
-            padding: 30px;
+            padding: 20px;
             border-radius: 4px;
             box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 50px rgba(139,69,19,0.15);
             border: 6px solid #4a2e18;
             outline: 2px solid #8c6d46;
-            outline-offset: -10px;
-            position: relative;
+            outline-offset: -8px;
+            box-sizing: border-box;
         }
+        .global-nav {
+            max-width: 950px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8em;
+            flex-wrap: wrap;
+        }
+        .global-nav a {
+            background: #7c5a3b;
+            color: #f4ecd0;
+            padding: 5px 10px;
+            border-radius: 2px;
+            text-decoration: none;
+            border: 1px solid #b59b6c;
+            transition: background 0.2s;
+        }
+        .global-nav a:hover { background: #8b0000; }
+
         .header {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             border-bottom: 3px double #7c5a3b;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-        }
-        .header img {
-            max-width: 90px;
-            filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4));
-        }
-        .header-text {
-            text-align: left;
-        }
-        h1 {
-            font-family: 'Cinzel', serif;
-            color: #8b0000;
-            font-size: 1.8em;
-            margin: 0;
-            line-height: 1.1;
-        }
-        .subtitle {
-            font-family: 'Cinzel', serif;
-            color: #5c4033;
-            font-size: 0.85em;
-            letter-spacing: 2px;
-            margin-top: 3px;
-        }
-        h2 {
-            font-family: 'Cinzel', serif;
-            color: #4a2e18;
-            font-size: 1.15em;
-            border-bottom: 1px solid #b59b6c;
-            padding-bottom: 4px;
-            margin-top: 25px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        p {
-            margin-bottom: 10px;
-            font-size: 0.95em;
-        }
-        .panel {
-            background: rgba(255, 253, 245, 0.6);
-            border: 1px solid #b59b6c;
-            padding: 15px 20px;
-            border-radius: 3px;
+            padding-bottom: 10px;
             margin-bottom: 15px;
-            box-shadow: inset 0 0 15px rgba(181, 155, 108, 0.2);
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-box {
-            background: #f4ecd0;
-            border: 4px solid #4a2e18;
-            padding: 30px;
-            border-radius: 4px;
             text-align: center;
-            max-width: 400px;
         }
-        .btn-acao {
-            background: #8b0000;
-            color: #fff;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 2px;
-            cursor: pointer;
-            font-family: 'Cinzel', serif;
-            font-size: 0.85em;
-        }
+        .header img { max-width: 75px; filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4)); }
+        .header-text { text-align: left; }
+        h1 { font-family: 'Cinzel', serif; color: #8b0000; font-size: 1.5em; margin: 0; line-height: 1.1; }
+        .subtitle { font-family: 'Cinzel', serif; color: #5c4033; font-size: 0.8em; letter-spacing: 2px; margin-top: 3px; }
+        h2 { font-family: 'Cinzel', serif; color: #4a2e18; font-size: 1.1em; border-bottom: 1px solid #b59b6c; padding-bottom: 4px; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        p { margin-bottom: 10px; font-size: 0.9em; }
+        .panel { background: rgba(255, 253, 245, 0.6); border: 1px solid #b59b6c; padding: 12px 15px; border-radius: 3px; margin-bottom: 15px; box-shadow: inset 0 0 15px rgba(181, 155, 108, 0.2); box-sizing: border-box; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; box-sizing: border-box; }
+        .modal-box { background: #f4ecd0; border: 4px solid #4a2e18; padding: 20px; border-radius: 4px; text-align: center; max-width: 400px; width: 100%; }
+        .btn-acao { background: #8b0000; color: #fff; border: none; padding: 5px 10px; border-radius: 2px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.8em; }
         .btn-acao:hover { background: #a00; }
-        
-        .divider {
-            border: none;
-            border-top: 1px solid #b59b6c;
-            margin: 25px 0 15px 0;
-        }
-        .grid-cards {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 10px;
-        }
-        .card {
-            background: #fdfbf7;
-            border: 1px solid #b59b6c;
-            padding: 12px;
-            border-radius: 3px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .card h3 {
-            font-family: 'Cinzel', serif;
-            color: #8b0000;
-            font-size: 0.95em;
-            margin: 0 0 5px 0;
-        }
-        .card p {
-            font-size: 0.85em;
-            margin: 0;
-            color: #4a2e18;
-        }
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .tag {
-            background: #e2d2aa;
-            border: 1px solid #b59b6c;
-            padding: 5px 10px;
-            border-radius: 3px;
-            font-family: 'Cinzel', serif;
-            font-size: 0.8em;
-            color: #4a2e18;
-            font-weight: bold;
+        .divider { border: none; border-top: 1px solid #b59b6c; margin: 20px 0 12px 0; }
+        .grid-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        .card { background: #fdfbf7; border: 1px solid #b59b6c; padding: 10px; border-radius: 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card h3 { font-family: 'Cinzel', serif; color: #8b0000; font-size: 0.9em; margin: 0 0 4px 0; }
+        .card p { font-size: 0.8em; margin: 0; color: #4a2e18; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .tag { background: #e2d2aa; border: 1px solid #b59b6c; padding: 4px 8px; border-radius: 3px; font-family: 'Cinzel', serif; font-size: 0.75em; color: #4a2e18; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .container { padding: 12px; border-width: 3px; outline-offset: -4px; }
+            .header { flex-direction: column; text-align: center; }
+            .header-text { text-align: center; }
+            .grid-cards { grid-template-columns: 1fr; }
+            .card[style*="grid-column"] { grid-column: span 1 !important; }
         }
     </style>
 </head>
@@ -215,16 +142,15 @@
     </div>
 </div>
 
-<!-- Menu de Navegação Global -->
-<div style="max-width: 950px; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em; flex-wrap: wrap;">
-    <a href="index.html" style="background: #4a2e18; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🏠 Início</a>
-    <a href="guia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📖 Guia</a>
-    <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🛡️ Ficha</a>
-    <a href="grimorio.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">✨ Magias</a>
-    <a href="historia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🗺️ História & Mapa</a>
-    <a href="personagens.html" id="link-personagens" style="display:none; background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📜 Personagens</a>
-    <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">⚙️ Painel Admin</a>
-    <div id="user-menu-area" style="display:inline-block; margin-left: 10px;">
+<div class="global-nav">
+    <a href="index.html">🏠 Início</a>
+    <a href="guia.html" style="background:#4a2e18;">📖 Guia</a>
+    <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')">🛡️ Ficha</a>
+    <a href="grimorio.html">✨ Magias</a>
+    <a href="historia.html">🗺️ História & Mapa</a>
+    <a href="personagens.html" id="link-personagens" style="display:none;">📜 Personagens</a>
+    <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff;">⚙️ Painel Admin</a>
+    <div id="user-menu-area" style="display:inline-block; margin-left: 5px;">
         <button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em;">🔑 Logar</button>
     </div>
 </div>
@@ -240,27 +166,27 @@
 
     <div class="panel">
         <h2>Contexto de Campanha & O Plot</h2>
-        <p>Itens chaves, nomes e referências essenciais baseados nos registros oficiais da história[cite: 7]:</p>
+        <p>Itens chaves, nomes e referências essenciais:</p>
         <div class="tags-container">
             <span class="tag">⚔️ Devoradores de Arton</span>
             <span class="tag">🛡️ Sociedade de Khalmyr</span>
-            <span class="tag">🐎 Cavalos das Trevas (Escravos)</span>
-            <span class="tag">⚖️ Insígnia (Espada com Balança)</span>
+            <span class="tag">🐎 Cavalos das Trevas (escravos)</span>
+            <span class="tag">⚖️ Insígnia dos servos de Khalmyr</span>
             <span class="tag">🏰 Vila de Khalmorya</span>
-            <span class="tag">👑 Malakor (Último Líder)</span>
-            <span class="tag">🦅 Sete Reinos do Sul</span>
-            <span class="tag">⚔️ Batalha Épica da Vila</span>
-            <span class="tag">🌟 Valkaria (A Guerreira)</span>
+            <span class="tag">👑 Malakor</span>
+            <span class="tag">🦅 Sete Reinos</span>
+            <span class="tag">🌟 Valkaria</span>
         </div>
-        <p style="margin-top: 12px; font-size: 0.9em;"><em>Nota sobre la Insígnia:</em> Uma espada com uma balança de dois pratos (a força equilibrada pela justiça). Possui magia anciã que só permite reconhecimento entre membros verdadeiros da Sociedade. Deve ser marcada em algum objeto pessoal (colar, anel, adaga).</p>
     </div>
 
+    <!-- Guia de Preenchimento da Ficha -->
     <div class="panel">
         <h2>Guia de Preenchimento da Ficha</h2>
-        <p>Abaixo estão as orientações para montar a ficha[cite: 6].</p>
-        <p>Cada jogador começa com 10 pontos; gaste-os para "comprar" seus atributos base (os recursos são calculados automaticamente). Os pontos também devem ser usados para escolher suas perícias, vantagens e desvantagens[cite: 6].</p>
-        <p>Escolha sua raça (elas podem conceder pontos extras); cada raça possui suas vantagens únicas. Depois, escolha seu arquétipo (classe). O conjunto de ambos definirá como seu personagem age, sente e é visto pelas pessoas do mundo[cite: 6].</p>
+        <p style="font-size: 0.85em; font-style: italic; color: #554033; margin-top: -5px; margin-bottom: 12px;">Abaixo estão as orientações para montar a ficha.</p>
+        <p style="font-size: 0.85em; font-style: italic; color: #554033; margin-top: -5px; margin-bottom: 12px;">Cada jogador começa com 10 pontos; gaste-os para "comprar" seus atributos base (os recursos são calculados automaticamente). Os pontos também devem ser usados para escolher suas perícias, vantagens e desvantagens.</p>
+        <p style="font-size: 0.85em; font-style: italic; color: #554033; margin-top: -5px; margin-bottom: 12px;">Escolha sua raça (elas podem conceder pontos extras); cada raça possui suas vantagens únicas. Depois, escolha seu arquétipo (classe). O conjunto de ambos definirá como seu personagem age, sente e é visto pelas pessoas do mundo.</p>
 
+        <!-- Atributos Base -->
         <h3 style="margin-top: 15px; font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Atributos Base</h3>
         <div class="grid-cards">
             <div class="card">
@@ -277,6 +203,7 @@
             </div>
         </div>
 
+        <!-- Recursos -->
         <h3 style="margin-top: 20px; font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Recursos</h3>
         <div class="grid-cards">
             <div class="card">
@@ -293,8 +220,10 @@
             </div>
         </div>
 
+        <!-- Linha de Divisão: Recursos -> Raças -->
         <hr class="divider">
 
+        <!-- Raças -->
         <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Raças (Vantagens Únicas)</h3>
         <div class="grid-cards">
             <div class="card">
@@ -307,7 +236,7 @@
             </div>
             <div class="card">
                 <h3>🧔 Anão (1 pt)</h3>
-                <p>Vigor inabalável, resistência extrema a rigores e físico robusto.</p>
+                <p>Vigor inabalável, resistência extrema e físico robusto.</p>
             </div>
             <div class="card">
                 <h3>🛡️ Meio-Orc (1 pt)</h3>
@@ -323,8 +252,10 @@
             </div>
         </div>
 
+        <!-- Linha de Divisão: Raças -> Arquétipos -->
         <hr class="divider">
 
+        <!-- Arquétipos -->
         <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Arquétipos de Heróis (classes)</h3>
         <div class="grid-cards">
             <div class="card">
@@ -346,10 +277,138 @@
             <div class="card">
                 <h3>⚔️ Bárbaro / Guerreiro</h3>
                 <p>Especialista em força bruta, ímpeto implacável e destruição de linhas inimigas.</p>
+                <p>- O Bárbaro é bruto, bate antes de perguntar.</p>
+                <p>- O Guerreiro segue um código, uma hierarquia.</p>
             </div>
             <div class="card">
-                <h3>🗡️ Ladino / Espião</h3>
+                <h3>🗡️ Ladino</h3>
                 <p>Focado em furtividade, ataques rápidos pelas sombras e desarme de armadilhas.</p>
+            </div>
+        </div>
+
+        <!-- Linha de Divisão: Arquétipos -> Perícias -->
+        <hr class="divider">
+
+        <!-- Perícias -->
+        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Perícias (1 pt cada)</h3>
+        <div class="grid-cards">
+            <div class="card">
+                <h3>⚔️ Luta</h3>
+                <p>Domínio de armas brancas, socos, pontapés e manobras ofensivas ou defensivas em combate direto.</p>
+            </div>
+            <div class="card">
+                <h3>👁️ Percepção</h3>
+                <p>Sentidos alertas para notar emboscadas, armadilhas, pistas ocultas e mentiras.</p>
+            </div>
+            <div class="card">
+                <h3>🌿 Medicina</h3>
+                <p>Capacidade de estabilizar ferimentos graves, tratar enfermidades e fazer curativos de campo.</p>
+            </div>
+            <div class="card">
+                <h3>✨ Mística</h3>
+                <p>Estudo e compreensão de rituais, entidades arcanas, criaturas mágicas e feitiços.</p>
+            </div>
+            <div class="card">
+                <h3>🏕️ Sustento</h3>
+                <p>Habilidade de rastrear presas, caçar, encontrar abrigo e sobreviver em ermos selvagens.</p>
+            </div>
+            <div class="card">
+                <h3>🗣️ Influência</h3>
+                <p>Eloqüência para negociar, liderar companheiros, barganhar ou intimidar adversários.</p>
+            </div>
+        </div>
+
+        <!-- Linha de Divisão: Perícias -> Vantagens -->
+        <hr class="divider">
+
+        <!-- Vantagens -->
+        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Vantagens (1 pt cada)</h3>
+        <div class="grid-cards">
+            <div class="card">
+                <h3>⚡ Ágil</h3>
+                <p>Reflexos fora do comum. Concede bônus em testes ágeis.</p>
+                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a desvantagem Atrapalhado.</p>
+            </div>
+            <div class="card">
+                <h3>💥 Ataque Esp. (Potente)</h3>
+                <p>Força concentrada. Gasta 1 PM para somar temporariamente +2 de Poder em um ataque.</p>
+            </div>
+            <div class="card">
+                <h3>🎯 Ataque Esp. (Perigoso)</h3>
+                <p>Golpe cirúrgico e letal. Gasta 1 PM para garantir efeitos críticos ampliados.</p>
+            </div>
+            <div class="card">
+                <h3>🛡️ Defesa Esp. (Esquiva)</h3>
+                <p>Agilidade defensiva. Gasta 2 PM para usar Habilidade no lugar de Resistência ao defender-se.</p>
+            </div>
+            <div class="card">
+                <h3>🧱 Defesa Esp. (Tenaz)</h3>
+                <p>Postura firme. Gasta 1 PM para receber +2 bônus em sua Defesa no turno.</p>
+            </div>
+            <div class="card">
+                <h3>❤️ Vigoroso</h3>
+                <p>Vitalidade impressionante. Concede bônus em saúde e testes de vigor.</p>
+                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a desvantagem Frágil.</p>
+            </div>
+            <div class="card" style="grid-column: span 2;">
+                <h3>💪 Forte</h3>
+                <p>Músculos imponentes. Concede bônus em esforço e testes de força pura.</p>
+                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a desvantagem Fracote.</p>
+            </div>
+        </div>
+
+        <!-- Linha de Divisão: Vantagens -> Desvantagens -->
+        <hr class="divider">
+
+        <!-- Desvantagens -->
+        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em;">Desvantagens</h3>
+        <p style="font-size: 0.85em; font-style: italic; color: #554033; margin-top: -5px; margin-bottom: 12px;">Cada desvantagem adiciona 1 ponto extra para ser gasto na ficha, com um limite máximo de 2 pontos bônus.</p>
+        <div class="grid-cards">
+            <div class="card">
+                <h3>📜 Código dos Heróis</h3>
+                <p>Juramento sagrado: jamais recusar ajuda a quem pede, nunca atacar covardemente e sempre cumprir a palavra.</p>
+            </div>
+            <div class="card">
+                <h3>⚖️ Código do Combate</h3>
+                <p>Honra marcial estrita: nunca atacar oponentes caídos, desarmados ou em desvantagem numérica flagrante.</p>
+            </div>
+            <div class="card">
+                <h3>🌀 Atrapalhado</h3>
+                <p>Falta de coordenação motora crônica.</p>
+                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a vantagem Ágil.</p>
+            </div>
+            <div class="card">
+                <h3>🏋️ Fracote</h3>
+                <p>Estrutura física deficiente para cargas e força bruta.</p>
+                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a vantagem Forte.</p>
+            </div>
+            <div class="card" style="grid-column: span 2;">
+                <h3>🥀 Frágil</h3>
+                <p>Constituição física delicada contra venenos, fadiga e doenças.</p>
+                <p style="color:#8b0000; font-weight:bold; font-size:0.8em; margin-top:4px;">* Contrapeso: Não pode ter a vantagem Vigoroso.</p>
+            </div>
+        </div>
+
+        <!-- Linha de Divisão: Desvantagens -> Mecânica de Jogo -->
+        <hr class="divider">
+
+        <!-- Como Funciona o Jogo (Mecânica Híbrida d20 + d6) -->
+        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1.1em; margin-top: 20px;">🎲 Como Funciona o Jogo (Mecânica Básica)</h3>
+        <p style="font-size: 0.9em; margin-bottom: 10px;">Para tornar a aventura dinâmica utilizamos dois tipos de dados na mesa:</p>
+        
+        <div class="grid-cards" style="margin-top: 10px;">
+            <div class="card">
+                <h3>🎯 Testes e Ações (Dado d20)</h3>
+                <p>Sempre que seu personagem tentar algo arriscado (atacar, saltar um abismo, investigar, negociar), você rolará <strong>1d20</strong>.</p>
+                <p style="margin-top: 6px;">🔹 <strong>A Regra de Ouro:</strong> O Mestre definirá a dificuldade (ex: 12). Você joga o d20 e soma o seu Atributo correspondente (P, H ou R). Se o total for igual ou maior que a dificuldade, você <strong>consegue</strong>!</p>
+                <p style="margin-top: 6px;">⭐ <strong>Perícias:</strong> Se você tiver a perícia certa para a ação, ganha um bônus fixo no teste.</p>
+                <p style="margin-top: 6px;">🔥 <strong>Críticos:</strong> Tirar <strong>20</strong> no d20 é um sucesso espetacular com bônus máximo. Tirar <strong>1</strong> é uma falha crítica desastrosa!</p>
+            </div>
+            <div class="card">
+                <h3>⚔️ Danos de Armas e Magias (Dado d6)</h3>
+                <p>Quando você acerta um golpe com sua arma ou dispara uma magia de combate, usamos os tradicionais <strong>dados de 6 faces (d6)</strong> para calcular o estrago.</p>
+                <p style="margin-top: 6px;">🔹 Cada arma ou feitiço possui uma quantidade específica de d6 para rolar e subtrair diretamente dos Pontos de Vida (PV) do oponente.</p>
+                <p style="margin-top: 6px;">🔹 É rápido, tático e fácil de somar na hora do combate!</p>
             </div>
         </div>
     </div>

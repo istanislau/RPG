@@ -6,7 +6,7 @@
     <title>História e Mapa Interativo - Vila de Khalmorya</title>
     <!-- Fontes Medievais -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
     
     <!-- Firebase SDK -->
     <script type="module">
@@ -40,11 +40,7 @@
                 userMenuArea.innerHTML = `<span style="color:#f4ecd0; font-weight:bold;">👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
                 
                 if (linkPersonagens) linkPersonagens.style.display = 'inline-block';
-                if (papel === "admin" && linkPainelAdmin) {
-                    linkPainelAdmin.style.display = 'inline-block';
-                } else if (linkPainelAdmin) {
-                    linkPainelAdmin.style.display = 'none';
-                }
+                if (papel === "admin" && linkPainelAdmin) linkPainelAdmin.style.display = 'inline-block';
             } else {
                 userMenuArea.innerHTML = `<button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em; background:#8b0000;">🔑 Logar</button>`;
                 if (linkPainelAdmin) linkPainelAdmin.style.display = 'none';
@@ -60,225 +56,106 @@
             background-image: radial-gradient(#2b1b11, #0d0804);
             color: #2c1810;
             line-height: 1.5;
-            padding: 15px;
+            padding: 10px;
         }
         .container {
             max-width: 950px;
             margin: 0 auto;
             background: #f4ecd0;
             background-image: linear-gradient(to bottom, #f7f1df, #efe2c0);
-            padding: 30px;
+            padding: 20px;
             border-radius: 4px;
             box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 50px rgba(139,69,19,0.15);
             border: 6px solid #4a2e18;
             outline: 2px solid #8c6d46;
-            outline-offset: -10px;
-            position: relative;
+            outline-offset: -8px;
+            box-sizing: border-box;
         }
+        .global-nav {
+            max-width: 950px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8em;
+            flex-wrap: wrap;
+        }
+        .global-nav a {
+            background: #7c5a3b;
+            color: #f4ecd0;
+            padding: 5px 10px;
+            border-radius: 2px;
+            text-decoration: none;
+            border: 1px solid #b59b6c;
+            transition: background 0.2s;
+        }
+        .global-nav a:hover { background: #8b0000; }
+
         .header {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             border-bottom: 3px double #7c5a3b;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-        }
-        .header img {
-            max-width: 90px;
-            filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4));
-        }
-        .header-text {
-            text-align: left;
-        }
-        h1 {
-            font-family: 'Cinzel', serif;
-            color: #8b0000;
-            font-size: 1.8em;
-            margin: 0;
-            line-height: 1.1;
-        }
-        .subtitle {
-            font-family: 'Cinzel', serif;
-            color: #5c4033;
-            font-size: 0.85em;
-            letter-spacing: 2px;
-            margin-top: 3px;
-        }
-        h2 {
-            font-family: 'Cinzel', serif;
-            color: #4a2e18;
-            font-size: 1.15em;
-            border-bottom: 1px solid #b59b6c;
-            padding-bottom: 4px;
-            margin-top: 25px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        p {
-            margin-bottom: 12px;
-            font-size: 0.95em;
-            text-align: justify;
-        }
-        .panel {
-            background: rgba(255, 253, 245, 0.6);
-            border: 1px solid #b59b6c;
-            padding: 15px 20px;
-            border-radius: 3px;
+            padding-bottom: 10px;
             margin-bottom: 15px;
-            box-shadow: inset 0 0 15px rgba(181, 155, 108, 0.2);
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-box {
-            background: #f4ecd0;
-            border: 4px solid #4a2e18;
-            padding: 30px;
-            border-radius: 4px;
             text-align: center;
-            max-width: 400px;
         }
-        .top-action-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #e2d2aa;
-            padding: 8px 12px;
-            border: 1px solid #b59b6c;
-            border-radius: 3px;
-            margin-bottom: 20px;
-            font-family: 'Cinzel', serif;
-            font-size: 0.85em;
-        }
-        .btn-acao {
-            background: #8b0000;
-            color: #fff;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 2px;
-            cursor: pointer;
-            font-family: 'Cinzel', serif;
-            font-size: 0.85em;
-            letter-spacing: 1px;
-            text-decoration: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: background 0.2s;
-        }
+        .header img { max-width: 75px; filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4)); }
+        .header-text { text-align: left; }
+        h1 { font-family: 'Cinzel', serif; color: #8b0000; font-size: 1.5em; margin: 0; line-height: 1.1; }
+        .subtitle { font-family: 'Cinzel', serif; color: #5c4033; font-size: 0.8em; letter-spacing: 2px; margin-top: 3px; }
+        h2 { font-family: 'Cinzel', serif; color: #4a2e18; font-size: 1.1em; border-bottom: 1px solid #b59b6c; padding-bottom: 4px; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        p { margin-bottom: 10px; font-size: 0.9em; text-align: justify; }
+        .panel { background: rgba(255, 253, 245, 0.6); border: 1px solid #b59b6c; padding: 12px 15px; border-radius: 3px; margin-bottom: 15px; box-shadow: inset 0 0 15px rgba(181, 155, 108, 0.2); box-sizing: border-box; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; box-sizing: border-box; }
+        .modal-box { background: #f4ecd0; border: 4px solid #4a2e18; padding: 20px; border-radius: 4px; text-align: center; max-width: 400px; width: 100%; }
+        .top-action-bar { display: flex; justify-content: space-between; align-items: center; background: #e2d2aa; padding: 8px 12px; border: 1px solid #b59b6c; border-radius: 3px; margin-bottom: 15px; font-family: 'Cinzel', serif; font-size: 0.8em; gap: 8px; flex-wrap: wrap; }
+        .btn-acao { background: #8b0000; color: #fff; border: none; padding: 5px 10px; border-radius: 2px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.8em; text-decoration: none; }
         .btn-acao:hover { background: #a00; }
-        .map-wrapper {
-            position: relative;
-            width: 100%;
-            height: 480px;
-            overflow: hidden;
-            border: 3px solid #7c5a3b;
-            border-radius: 3px;
-            background: #2b1b11;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            margin: 20px 0;
-            box-sizing: border-box;
-            cursor: grab;
+        
+        /* Correção com aspect-ratio fixo (base 850x550) para manter coordenadas idênticas em qualquer ecrã sem cortes */
+        .map-wrapper { 
+            position: relative; 
+            width: 100%; 
+            aspect-ratio: 850 / 550; 
+            max-height: 70vh; 
+            overflow: hidden; 
+            border: 3px solid #7c5a3b; 
+            border-radius: 3px; 
+            background: #2b1b11; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); 
+            margin: 15px 0; 
+            box-sizing: border-box; 
+            touch-action: none; 
         }
-        .map-wrapper:active { cursor: grabbing; }
-        .map-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-origin: center center;
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        }
+        .map-container { width: 100%; height: 100%; position: relative; transform-origin: center center; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); cursor: grab; display: flex; justify-content: center; align-items: center; }
+        .map-container:active { cursor: grabbing; }
         .map-container.dragging { transition: none; }
-        .map-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-        }
-        .map-marker {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 3px solid #ff2222;
-            background: rgba(255, 0, 0, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px #ff0000, inset 0 0 10px #ff0000;
-            animation: pulsar 1.2s infinite;
-            display: none;
-            z-index: 5;
-            pointer-events: none;
-        }
-        @keyframes pulsar {
-            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; }
-            50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.3; }
-            100% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; }
-        }
-        .map-controls {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .map-controls button {
-            background: #7c5a3b;
-            color: #fff;
-            border: 1px solid #f4ecd0;
-            width: 32px;
-            height: 32px;
-            font-weight: bold;
-            font-family: 'Cinzel', serif;
-            cursor: pointer;
-            border-radius: 2px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
+        .map-container img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+        
+        .map-marker { position: absolute; width: 35px; height: 35px; border: 3px solid #ff2222; background: rgba(255, 0, 0, 0.2); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px #ff0000; animation: pulsar 1.2s infinite; display: none; z-index: 5; pointer-events: none; }
+        @keyframes pulsar { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; } 50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.3; } 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; } }
+        
+        .map-controls { position: absolute; top: 10px; right: 10px; z-index: 10; display: flex; flex-direction: column; gap: 5px; }
+        .map-controls button { background: #7c5a3b; color: #fff; border: 1px solid #f4ecd0; width: 30px; height: 30px; font-weight: bold; font-family: 'Cinzel', serif; cursor: pointer; border-radius: 2px; }
         .map-controls button:hover { background: #8b0000; }
-        .grid-legendas {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 15px;
-            background: #fdfbf7;
-            border: 1px solid #b59b6c;
-            padding: 12px;
-            border-radius: 3px;
-            font-size: 0.85em;
-        }
-        .legenda-item {
-            color: #4a2e18;
-            cursor: pointer;
-            padding: 4px 6px;
-            border-radius: 2px;
-            transition: background 0.2s, color 0.2s;
-        }
-        .legenda-item:hover {
-            background: #e2d2aa;
-            color: #8b0000;
-        }
-        .legenda-item strong {
-            color: #8b0000;
-            font-family: 'Cinzel', serif;
-        }
-        .insignia-box {
-            background: #e2d2aa;
-            border: 1px solid #b59b6c;
-            padding: 12px 15px;
-            border-radius: 3px;
-            margin-top: 15px;
-            font-size: 0.9em;
-        }
-        .insignia-box strong {
-            font-family: 'Cinzel', serif;
-            color: #8b0000;
+        
+        .grid-legendas { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 10px; background: #fdfbf7; border: 1px solid #b59b6c; padding: 10px; border-radius: 3px; font-size: 0.8em; }
+        .legenda-item { color: #4a2e18; cursor: pointer; padding: 4px; border-radius: 2px; transition: background 0.2s; }
+        .legenda-item:hover { background: #e2d2aa; color: #8b0000; }
+        .legenda-item strong { color: #8b0000; font-family: 'Cinzel', serif; }
+        .insignia-box { background: #e2d2aa; border: 1px solid #b59b6c; padding: 10px; border-radius: 3px; margin-top: 12px; font-size: 0.85em; }
+        .insignia-box strong { font-family: 'Cinzel', serif; color: #8b0000; }
+
+        @media (max-width: 768px) {
+            .container { padding: 12px; border-width: 3px; outline-offset: -4px; }
+            .header { flex-direction: column; text-align: center; }
+            .header-text { text-align: center; }
+            .grid-legendas { grid-template-columns: 1fr; }
+            .top-action-bar { flex-direction: column; text-align: center; gap: 8px; }
         }
     </style>
 </head>
@@ -293,16 +170,15 @@
     </div>
 </div>
 
-<!-- Menu de Navegação Global -->
-<div style="max-width: 950px; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em; flex-wrap: wrap;">
-    <a href="index.html" style="background: #4a2e18; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🏠 Início</a>
-    <a href="guia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📖 Guia</a>
-    <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🛡️ Ficha</a>
-    <a href="grimorio.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">✨ Magias</a>
-    <a href="historia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🗺️ História & Mapa</a>
-    <a href="personagens.html" id="link-personagens" style="display:none; background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📜 Personagens</a>
-    <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">⚙️ Painel Admin</a>
-    <div id="user-menu-area" style="display:inline-block; margin-left: 10px;">
+<div class="global-nav">
+    <a href="index.html">🏠 Início</a>
+    <a href="guia.html">📖 Guia</a>
+    <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')">🛡️ Ficha</a>
+    <a href="grimorio.html">✨ Magias</a>
+    <a href="historia.html" style="background:#4a2e18;">🗺️ História & Mapa</a>
+    <a href="personagens.html" id="link-personagens" style="display:none;">📜 Personagens</a>
+    <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff;">⚙️ Painel Admin</a>
+    <div id="user-menu-area" style="display:inline-block; margin-left: 5px;">
         <button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em;">🔑 Logar</button>
     </div>
 </div>
@@ -317,17 +193,13 @@
     </div>
 
     <div class="top-action-bar">
-        <div>
-            <span style="font-weight: bold; color: #8b0000;">📖 Plot Oficial & Registros da Batalha</span>
-        </div>
-        <div>
-            <button type="button" class="btn-acao" onclick="window.print()">📜 Gerar PDF</button>
-        </div>
+        <div><span style="font-weight: bold; color: #8b0000;">📖 Plot Oficial & Registros</span></div>
+        <div><button type="button" class="btn-acao" onclick="window.print()">📜 Gerar PDF</button></div>
     </div>
 
     <div class="panel">
         <h2>Plot da História</h2>
-        <p>Os tempos eram sombrios, os <strong>Devoradores de Arton</strong> vinham expandindo sua perversa dominação das vilas do norte, em cada lugar que passavam o cheiro de sangue fresco dominava os olfatos[cite: 7]. A visão era assustadora, o ambiente tomado de fuligem não permitia saber se era dia ou noite mas ao fundo via se apenas morte, fogo, destruição e terror. As almas choravam naquele lugar.</p>
+        <p>Os tempos eram sombrios, os <strong>Devoradores de Arton</strong> vinham expandindo sua perversa dominação das vilas do norte, em cada lugar que passavam o cheiro de sangue fresco dominava os olfatos. A visão era assustadora, o ambiente tomado de fuligem não permitia saber se era dia ou noite mas ao fundo via se apenas morte, fogo, destruição e terror. As almas choravam naquele lugar.</p>
         <p>Os sobreviventes eram escravizados e sob dominação de terror eram obrigados a fazer os piores serviços, aqueles que nem o mais desprezível dos Goblins faria, os Devoradores chamavam esses escravos de cavalos das trevas.</p>
         <p>Do sul, os sete reinos reuniram seus melhores grupos de heróis e assim deu início a <strong>Sociedade de Khalmyr</strong>, a última esperança do mundo livre. A eles e somente a eles foi permitido portar a <strong>insígnia dos servos de Khalmyr</strong> e para que nenhum ímpio a porte a insígnia dos membros da Sociedade foi abençoada com magia anciã, assim só um outro membro da Sociedade se portando a sua insígnia reconhece outro membro verdadeiro.</p>
         <p>Aos poucos eles começaram a ganhar espaço e impor derrotas aos Devoradores, um a um os líderes deles eram derrotados mas infelizmente o custo era pago com as vidas dos membros da Sociedade.</p>
@@ -344,97 +216,112 @@
 
     <div class="panel">
         <h2>Mapa Interativo de Khalmorya</h2>
-        <p>Clique em qualquer ponto da legenda para dar zoom e destacar o local exato com o anel pulsante vermelho[cite: 7]:</p>
+        <p>Clique em qualquer ponto da legenda para dar zoom e destacar o local:</p>
         
         <div class="map-wrapper" id="mapWrapper">
             <div class="map-controls">
-                <button type="button" onclick="zoomIn()" title="Aproximar">+</button>
-                <button type="button" onclick="zoomOut()" title="Afastar">-</button>
-                <button type="button" onclick="resetZoom()" title="Restaurar Visão">⌂</button>
+                <button type="button" onclick="zoomIn()">+</button>
+                <button type="button" onclick="zoomOut()">-</button>
+                <button type="button" onclick="resetZoom()">⌂</button>
             </div>
             <div class="map-container" id="mapaZoom">
-                <img src="Khalmorya.png" alt="Mapa da Vila de Khalmorya" onerror="this.onerror=null; this.src='https://via.placeholder.com/850x550?text=Mapa+de+Khalmorya+(Insira+Khalmorya.png)';">
+                <img src="Khalmorya.png" alt="Mapa da Vila de Khalmorya" onerror="this.onerror=null; this.src='https://via.placeholder.com/850x550?text=Mapa+de+Khalmorya';">
                 <div class="map-marker" id="mapMarker"></div>
             </div>
         </div>
 
-        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em; margin-top:15px;">Pontos de Interesse (Clique para Focar & Destacar)</h3>
+        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:0.95em; margin-top:12px;">Pontos de Interesse</h3>
         <div class="grid-legendas">
             <div class="legenda-item" onclick="focarLocal(46, 52)"><strong>a.</strong> Templo de Khalmyr</div>
-            <div class="legenda-item" onclick="focarLocal(45, 41)"><strong>b.</strong> Praça das Artes</div>
+            <div class="legenda-item" onclick="focarLocal(44, 41)"><strong>b.</strong> Praça das Artes</div>
             <div class="legenda-item" onclick="focarLocal(48, 61)"><strong>c.</strong> Taberna</div>
             <div class="legenda-item" onclick="focarLocal(41, 50)"><strong>d.</strong> Praça Principal</div>
-            <div class="legenda-item" onclick="focarLocal(42, 41)"><strong>e.</strong> Casa do Povo</div>
-            <div class="legenda-item" onclick="focarLocal(46, 59)"><strong>f.</strong> Praça dos Dispostos</div>
-            <div class="legenda-item" onclick="focarLocal(41, 63)"><strong>g.</strong> Hospedaria</div>
-            <div class="legenda-item" onclick="focarLocal(20, 59)"><strong>h.</strong> Entrada Principal</div>
-            <div class="legenda-item" onclick="focarLocal(57, 13)"><strong>i.</strong> Passagem do Shiman</div>
-            <div class="legenda-item" onclick="focarLocal(66, 91)"><strong>j.</strong> Caminho das Almas</div>
+            <div class="legenda-item" onclick="focarLocal(41, 41)"><strong>e.</strong> Casa do Povo</div>
+            <div class="legenda-item" onclick="focarLocal(45, 58)"><strong>f.</strong> Praça dos Dispostos</div>
+            <div class="legenda-item" onclick="focarLocal(40, 63)"><strong>g.</strong> Hospedaria</div>
+            <div class="legenda-item" onclick="focarLocal(15, 58)"><strong>h.</strong> Entrada Principal</div>
+            <div class="legenda-item" onclick="focarLocal(58, 14)"><strong>i.</strong> Passagem do Shiman</div>
+            <div class="legenda-item" onclick="focarLocal(70, 89)"><strong>j.</strong> Caminho das Almas</div>
         </div>
-
-        <div style="margin-top: 12px; font-size: 0.85em; color: #5c4033;">
-            <strong>Distritos Principais:</strong> Infantes | Campos Alto | Bairro Baixo | Entre Pontes[cite: 7].
+        
+        <div style="margin-top: 10px; font-size: 0.85em; color: #5c4033;">
+            <strong>Distritos Principais:</strong> Infantes | Campos Alto | Bairro Baixo | Entre Pontes.
         </div>
     </div>
 </div>
 
 <script>
-    let escalaAtual = 1;
-    let posXAtual = 50;
-    let posYAtual = 50;
-    let isDragging = false;
-    let startX, startY;
-
+    let escalaAtual = 1, posXAtual = 50, posYAtual = 50, isDragging = false, startX, startY;
     const wrapper = document.getElementById('mapWrapper');
     const mapa = document.getElementById('mapaZoom');
     const marker = document.getElementById('mapMarker');
 
-    function atualizarMapa() {
-        mapa.style.transform = `scale(${escalaAtual}) translate(${50 - posXAtual}%, ${50 - posYAtual}%)`;
+    function atualizarMapa() { 
+        mapa.style.transform = `scale(${escalaAtual}) translate(${50 - posXAtual}%, ${50 - posYAtual}%)`; 
     }
 
-    function focarLocal(x, y) {
+    function focarLocal(x, y) { 
         escalaAtual = 3.2; 
-        posXAtual = x;
-        posYAtual = y;
-        atualizarMapa();
-        marker.style.left = x + '%';
-        marker.style.top = y + '%';
-        marker.style.display = 'block';
+        posXAtual = x; 
+        posYAtual = y; 
+        atualizarMapa(); 
+        marker.style.left = x + '%'; 
+        marker.style.top = y + '%'; 
+        marker.style.display = 'block'; 
     }
 
-    function zoomIn() {
-        if (escalaAtual < 4) { escalaAtual += 0.5; atualizarMapa(); }
+    function zoomIn() { 
+        if (escalaAtual < 4) { escalaAtual += 0.5; atualizarMapa(); } 
     }
 
-    function zoomOut() {
-        if (escalaAtual > 1) {
-            escalaAtual -= 0.5;
-            if (escalaAtual === 1) { posXAtual = 50; posYAtual = 50; marker.style.display = 'none'; }
-            atualizarMapa();
-        }
+    function zoomOut() { 
+        if (escalaAtual > 1) { 
+            escalaAtual -= 0.5; 
+            if (escalaAtual === 1) { posXAtual = 50; posYAtual = 50; marker.style.display = 'none'; } 
+            atualizarMapa(); 
+        } 
     }
 
-    function resetZoom() {
-        escalaAtual = 1; posXAtual = 50; posYAtual = 50; marker.style.display = 'none'; atualizarMapa();
+    function resetZoom() { 
+        escalaAtual = 1; posXAtual = 50; posYAtual = 50; marker.style.display = 'none'; atualizarMapa(); 
     }
 
-    wrapper.addEventListener('mousedown', (e) => {
-        if (escalaAtual > 1) { isDragging = true; mapa.classList.add('dragging'); startX = e.clientX; startY = e.clientY; }
+    // Suporte para Rato (Mouse)
+    wrapper.addEventListener('mousedown', (e) => { 
+        if (escalaAtual > 1) { isDragging = true; mapa.classList.add('dragging'); startX = e.clientX; startY = e.clientY; } 
     });
-
     window.addEventListener('mouseup', () => { isDragging = false; mapa.classList.remove('dragging'); });
-
-    wrapper.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        let deltaX = (e.clientX - startX) / escalaAtual;
-        let deltaY = (e.clientY - startY) / escalaAtual;
-        posXAtual -= deltaX * 0.1;
-        posYAtual -= deltaY * 0.1;
-        startX = e.clientX;
-        startY = e.clientY;
-        atualizarMapa();
+    wrapper.addEventListener('mousemove', (e) => { 
+        if (!isDragging) return; 
+        posXAtual -= ((e.clientX - startX) / escalaAtual) * 0.1; 
+        posYAtual -= ((e.clientY - startY) / escalaAtual) * 0.1; 
+        startX = e.clientX; 
+        startY = e.clientY; 
+        atualizarMapa(); 
     });
+
+    // Suporte Completo para Touch (Telemóveis e Tablets)
+    wrapper.addEventListener('touchstart', (e) => { 
+        if (escalaAtual > 1 && e.touches.length === 1) { 
+            isDragging = true; 
+            mapa.classList.add('dragging'); 
+            startX = e.touches[0].clientX; 
+            startY = e.touches[0].clientY; 
+        } 
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => { isDragging = false; mapa.classList.remove('dragging'); });
+
+    wrapper.addEventListener('touchmove', (e) => { 
+        if (!isDragging || e.touches.length !== 1) return; 
+        let clientX = e.touches[0].clientX;
+        let clientY = e.touches[0].clientY;
+        posXAtual -= ((clientX - startX) / escalaAtual) * 0.1; 
+        posYAtual -= ((clientY - startY) / escalaAtual) * 0.1; 
+        startX = clientX; 
+        startY = clientY; 
+        atualizarMapa(); 
+    }, { passive: true });
 </script>
 
 </body>

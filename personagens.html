@@ -6,7 +6,7 @@
     <title>Personagens - Vila de Khalmorya</title>
     <!-- Fontes Medievais -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
     
     <!-- Firebase SDK -->
     <script type="module">
@@ -44,7 +44,7 @@
                                 <strong style="font-family:'Cinzel',serif; color:#8b0000; font-size:1.1em;">${ficha.nomeHeroi || 'Herói sem nome'}</strong><br>
                                 <span style="font-size:0.85em; color:#5c4033;">Criador: ${ficha.email || 'Desconhecido'} | Arquétipo: ${ficha.arquetipo || 'N/D'}</span>
                             </div>
-                            <div style="display:flex; gap:6px;">
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
                                 <button type="button" class="btn-acao" onclick="abrirFicha('${d.id}')">📂 Abrir</button>
                                 <button type="button" class="btn-acao" style="background:#7c5a3b;" onclick="baixarBackupIndividual('${d.id}', decodeURIComponent('${fichaJsonStr}'))">💾 Backup</button>
                                 <button type="button" class="btn-acao" style="background:#8b0000;" onclick="deletarFichaLista('${d.id}')">🗑️ Excluir</button>
@@ -106,8 +106,6 @@
             reader.onload = async function(e) {
                 try {
                     let dadosRestaurados = JSON.parse(e.target.result);
-                    
-                    // Garante que a ficha restaurada pertence ao utilizador atual e atualiza a data
                     dadosRestaurados.uid = user.uid;
                     dadosRestaurados.email = user.email;
                     dadosRestaurados.atualizadoEm = new Date();
@@ -133,85 +131,115 @@
             background-image: radial-gradient(#2b1b11, #0d0804);
             color: #2c1810;
             line-height: 1.5;
-            padding: 15px;
+            padding: 10px;
         }
         .container {
             max-width: 900px;
-            margin: 20px auto;
+            margin: 15px auto;
             background: #f4ecd0;
             background-image: linear-gradient(to bottom, #f7f1df, #efe2c0);
-            padding: 40px;
+            padding: 20px;
             border-radius: 4px;
             box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 50px rgba(139,69,19,0.15);
             border: 6px solid #4a2e18;
             outline: 2px solid #8c6d46;
-            outline-offset: -10px;
+            outline-offset: -8px;
+            box-sizing: border-box;
         }
+        .global-nav {
+            max-width: 900px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8em;
+            flex-wrap: wrap;
+        }
+        .global-nav a {
+            background: #7c5a3b;
+            color: #f4ecd0;
+            padding: 5px 10px;
+            border-radius: 2px;
+            text-decoration: none;
+            border: 1px solid #b59b6c;
+            transition: background 0.2s;
+        }
+        .global-nav a:first-child { background: #4a2e18; }
+        .global-nav a:hover { background: #8b0000; }
+
         .header {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             border-bottom: 3px double #7c5a3b;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
         h1 {
             font-family: 'Cinzel', serif;
             color: #8b0000;
-            font-size: 2em;
+            font-size: 1.5em;
             margin: 0;
+            text-align: center;
         }
         .panel {
             background: rgba(255, 253, 245, 0.6);
             border: 1px solid #b59b6c;
-            padding: 15px 20px;
+            padding: 12px 15px;
             border-radius: 3px;
             margin-bottom: 15px;
+            box-sizing: border-box;
         }
         .btn-acao {
             background: #8b0000;
             color: #fff;
             border: none;
-            padding: 6px 14px;
+            padding: 5px 10px;
             border-radius: 2px;
             cursor: pointer;
             font-family: 'Cinzel', serif;
-            font-size: 0.85em;
+            font-size: 0.8em;
         }
         .btn-acao:hover { background: #a00; }
+
+        @media (max-width: 768px) {
+            .container { padding: 12px; border-width: 3px; outline-offset: -4px; }
+            h1 { font-size: 1.3em; }
+        }
     </style>
 </head>
 <body>
 
-<!-- Menu de Navegação Global -->
-<div style="max-width: 900px; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em; flex-wrap: wrap;">
-    <a href="index.html" style="background: #4a2e18; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🏠 Início</a>
-    <a href="guia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📖 Guia</a>
-    <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🛡️ Ficha</a>
-    <a href="grimorio.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">✨ Magias</a>
-    <a href="historia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🗺️ História & Mapa</a>
-    <a href="personagens.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📜 Personagens</a>
-    <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">⚙️ Painel Admin</a>
-    <div id="user-menu-area" style="display:inline-block; margin-left: 10px;"></div>
+<div class="global-nav">
+    <a href="index.html">🏠 Início</a>
+    <a href="guia.html">📖 Guia</a>
+    <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')">🛡️ Ficha</a>
+    <a href="grimorio.html">✨ Magias</a>
+    <a href="historia.html">🗺️ História & Mapa</a>
+    <a href="personagens.html" style="background:#4a2e18;">📜 Personagens</a>
+    <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff;">⚙️ Painel Admin</a>
+    <div id="user-menu-area" style="display:inline-block; margin-left: 5px;"></div>
 </div>
 
 <div class="container">
-        <div class="header">
-            <h1>Lista de Personagens</h1>
-        </div>
-
-        <div class="panel">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h2 style="font-family:'Cinzel',serif; color:#4a2e18; font-size:1.1em; margin:0;">Heróis da Aventura</h2>
-                <div>
-                    <input type="file" id="input-restaurar-json" accept=".json" style="display: none;" onchange="restaurarBackupJSON(event)">
-                    <button type="button" class="btn-acao" onclick="document.getElementById('input-restaurar-json').click()" style="background:#205493;">📂 Restaurar Backup (JSON)</button>
-                </div>
-            </div>
-            <div id="lista-personagens">A carregar os personagens...</div>
-        </div>
+    <div class="header">
+        <h1>Lista de Personagens</h1>
     </div>
+
+    <div class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+            <h2 style="font-family:'Cinzel',serif; color:#4a2e18; font-size:1.1em; margin:0;">Heróis da Aventura</h2>
+            <div>
+                <input type="file" id="input-restaurar-json" accept=".json" style="display: none;" onchange="restaurarBackupJSON(event)">
+                <button type="button" class="btn-acao" onclick="document.getElementById('input-restaurar-json').click()" style="background:#205493;">📂 Restaurar Backup (JSON)</button>
+            </div>
+        </div>
+        <div id="lista-personagens">A carregar os personagens...</div>
+    </div>
+</div>
 
 </body>
 </html>

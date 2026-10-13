@@ -6,7 +6,7 @@
     <title>Ficha de Personagem - Khalmorya (3D&T)</title>
     <!-- Fontes Medievais -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
     
     <!-- Firebase SDK -->
     <script type="module">
@@ -46,7 +46,6 @@
                     linkPainelAdmin.style.display = 'none';
                 }
 
-                // Carregar ficha se houver ID na URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const fichaId = urlParams.get('id');
                 if (fichaId) {
@@ -65,7 +64,7 @@
             }
         });
 
-        // --- SALVAR FICHA NA NUVEM (Incluindo Armas e Notas) ---
+        // --- SALVAR FICHA NA NUVEM (Incluindo Recursos Atuais) ---
         window.salvarFichaNuvem = async function() {
             const user = auth.currentUser;
             if (!user) {
@@ -74,7 +73,6 @@
                 return;
             }
 
-            // Recolher as armas da tabela
             let armas = [];
             document.querySelectorAll('#tabela-armas tbody tr').forEach(linha => {
                 let selectArma = linha.querySelector('select');
@@ -100,6 +98,8 @@
                 p: document.getElementById('attr-p').value,
                 h: document.getElementById('attr-h').value,
                 r: document.getElementById('attr-r').value,
+                paAtual: document.getElementById('res-pa-atual').value,
+                pmAtual: document.getElementById('res-pm-atual').value,
                 pvAtual: document.getElementById('res-pv-atual').value,
                 armas: armas,
                 notas: document.getElementById('notas-heroi').value,
@@ -118,7 +118,7 @@
             }
         };
 
-        // --- CARREGAR FICHA DA NUVEM (Incluindo Armas e Notas) ---
+        // --- CARREGAR FICHA DA NUVEM ---
         window.carregarFichaPorId = async function(id) {
             try {
                 let docSnap = await getDoc(doc(db, "fichas", id));
@@ -130,34 +130,37 @@
                     document.getElementById('attr-p').value = d.p || 0;
                     document.getElementById('attr-h').value = d.h || 0;
                     document.getElementById('attr-r').value = d.r || 0;
-                    document.getElementById('res-pv-atual').value = d.pvAtual || 0;
+                    
+                    calcularTudo();
+
+                    if (d.paAtual !== undefined) document.getElementById('res-pa-atual').value = d.paAtual;
+                    if (d.pmAtual !== undefined) document.getElementById('res-pm-atual').value = d.pmAtual;
+                    if (d.pvAtual !== undefined) document.getElementById('res-pv-atual').value = d.pvAtual;
+                    
                     document.getElementById('notas-heroi').value = d.notas || '';
 
-                    // Limpar a tabela de armas atual e repor as guardadas
                     let tbody = document.querySelector('#tabela-armas tbody');
                     tbody.innerHTML = '';
 
                     if (d.armas && Array.isArray(d.armas)) {
                         d.armas.forEach(armaSalva => {
-                            adicionarArma(); // Cria a linha vazia
+                            adicionarArma();
                             let ultimaLinha = tbody.lastElementChild;
                             let select = ultimaLinha.querySelector('select');
                             if (select) {
                                 select.value = armaSalva.tipo;
-                                atualizarInfoArma(select); // Atualiza os textos da coluna
+                                atualizarInfoArma(select);
                             }
                         });
                     }
-
-                    calcularTudo();
                 }
             } catch (e) {
                 console.error("Erro ao carregar ficha:", e);
             }
         };
-        // Função para descarregar o backup da ficha em formato JSON (com armas)
+
+        // --- BACKUP JSON ---
         window.baixarBackupFicha = function() {
-            // Recolher as armas da tabela
             let armas = [];
             document.querySelectorAll('#tabela-armas tbody tr').forEach(linha => {
                 let selectArma = linha.querySelector('select');
@@ -178,6 +181,8 @@
                 p: document.getElementById('attr-p').value,
                 h: document.getElementById('attr-h').value,
                 r: document.getElementById('attr-r').value,
+                paAtual: document.getElementById('res-pa-atual').value,
+                pmAtual: document.getElementById('res-pm-atual').value,
                 pvAtual: document.getElementById('res-pv-atual').value,
                 armas: armas,
                 notas: document.getElementById('notas-heroi').value
@@ -192,7 +197,7 @@
             URL.revokeObjectURL(url);
         };
 
-        // Função para excluir a ficha da nuvem (Firestore)
+        // --- EXCLUIR FICHA ---
         window.deletarFichaNuvem = async function() {
             const user = auth.currentUser;
             if (!user) {
@@ -210,7 +215,6 @@
 
             if (confirm("Tens a certeza absoluta que queres excluir esta ficha da nuvem? Esta ação não pode ser desfeita.")) {
                 try {
-                    // Importa o deleteDoc caso ainda não o tenhas no topo do script
                     import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").then(async ({ deleteDoc, doc }) => {
                         await deleteDoc(doc(db, "fichas", fichaId));
                         alert("Ficha excluída com sucesso!");
@@ -231,14 +235,14 @@
             background-image: radial-gradient(#2b1b11, #0d0804);
             color: #2c1810;
             line-height: 1.4;
-            padding: 15px;
+            padding: 10px;
         }
         .container {
             max-width: 900px;
             margin: 0 auto;
             background: #f4ecd0;
             background-image: linear-gradient(to bottom, #f7f1df, #efe2c0);
-            padding: 25px;
+            padding: 20px;
             border-radius: 4px;
             box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 50px rgba(139,69,19,0.15);
             border: 6px solid #4a2e18;
@@ -247,22 +251,21 @@
             position: relative;
             box-sizing: border-box;
         }
-        /* Menu de Navegação Global (Oculto na Impressão) */
         .global-nav {
             max-width: 900px;
             margin: 0 auto 15px auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-family: 'Cinzel', serif;
-            font-size: 0.85em;
+            font-size: 0.8em;
             flex-wrap: wrap;
         }
         .global-nav a {
             background: #7c5a3b;
             color: #f4ecd0;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 2px;
             text-decoration: none;
             border: 1px solid #b59b6c;
@@ -283,31 +286,34 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            padding: 15px;
+            box-sizing: border-box;
         }
         .modal-box {
             background: #f4ecd0;
             border: 4px solid #4a2e18;
-            padding: 30px;
+            padding: 20px;
             border-radius: 4px;
             text-align: center;
             max-width: 400px;
+            width: 100%;
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
 
-        /* Cabeçalho centralizado com brasão à esquerda */
         .header {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             border-bottom: 3px double #7c5a3b;
             padding-bottom: 12px;
             margin-bottom: 15px;
             width: 100%;
             box-sizing: border-box;
+            text-align: center;
         }
         .header img {
-            max-width: 85px;
+            max-width: 70px;
             filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4));
         }
         .header-text {
@@ -316,19 +322,18 @@
         h1 {
             font-family: 'Cinzel', serif;
             color: #8b0000;
-            font-size: 1.8em;
+            font-size: 1.5em;
             margin: 0;
             line-height: 1.1;
         }
         .subtitle {
             font-family: 'Cinzel', serif;
             color: #5c4033;
-            font-size: 0.9em;
+            font-size: 0.8em;
             letter-spacing: 2px;
             margin-top: 3px;
         }
         
-        /* Barra de Ações do Topo */
         .top-action-bar {
             display: flex;
             justify-content: space-between;
@@ -339,10 +344,12 @@
             border-radius: 3px;
             margin-bottom: 15px;
             font-family: 'Cinzel', serif;
-            font-size: 0.85em;
+            font-size: 0.8em;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         .top-action-bar input {
-            width: 45px;
+            width: 40px;
             padding: 2px;
             text-align: center;
             font-family: 'Cinzel', serif;
@@ -358,20 +365,20 @@
             background: #8b0000;
             color: #fff;
             border: none;
-            padding: 6px 14px;
+            padding: 5px 10px;
             border-radius: 2px;
             cursor: pointer;
             font-family: 'Cinzel', serif;
-            font-size: 0.85em;
+            font-size: 0.8em;
             letter-spacing: 1px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             transition: background 0.2s;
+            margin-bottom: 2px;
         }
         .btn-pdf:hover {
             background: #a00;
         }
 
-        /* Blocos Estilo RPG */
         .panel {
             background: rgba(255, 253, 245, 0.6);
             border: 1px solid #b59b6c;
@@ -384,7 +391,7 @@
         .panel h2 {
             font-family: 'Cinzel', serif;
             color: #4a2e18;
-            font-size: 1.05em;
+            font-size: 1em;
             border-bottom: 1px solid #b59b6c;
             padding-bottom: 4px;
             margin-top: 0;
@@ -433,9 +440,8 @@
             min-height: 80px;
         }
 
-        /* Inputs de Atributos Compactos */
         .attr-input {
-            width: 60px !important;
+            width: 55px !important;
             padding: 5px;
             text-align: center;
             font-weight: bold;
@@ -479,16 +485,16 @@
             font-style: italic;
         }
 
-        /* Recursos Estilizados */
+        /* Recursos Estilizados com Atual */
         .recursos {
             display: flex;
             justify-content: space-between;
-            gap: 8px;
+            gap: 6px;
             text-align: center;
         }
         .recurso-box {
             flex: 1;
-            padding: 8px;
+            padding: 6px;
             border-radius: 3px;
             border: 1px solid rgba(0,0,0,0.15);
         }
@@ -498,7 +504,7 @@
 
         .recurso-box span {
             display: block;
-            font-size: 1.4em;
+            font-size: 1.2em;
             font-weight: bold;
             font-family: 'Cinzel', serif;
         }
@@ -507,57 +513,65 @@
         .recurso-pv span { color: #a94442; }
 
         .recurso-box small {
-            font-size: 0.65em;
+            font-size: 0.6em;
             color: #5c4033;
             display: block;
             margin-top: 2px;
             line-height: 1.1;
         }
 
-        .pv-flex {
+        .recurso-flex {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 3px;
             margin-top: 4px;
         }
-        .pv-atual-input {
-            width: 50px !important;
-            padding: 3px;
+        .recurso-atual-input {
+            width: 40px !important;
+            padding: 2px;
             text-align: center;
             font-weight: bold;
             font-family: 'Cinzel', serif;
-            color: #a94442;
             background: #fff;
-            border: 1px solid #d9534f !important;
             border-radius: 2px;
             margin-bottom: 0 !important;
+            font-size: 0.9em;
         }
+        .pa-atual-input { color: #b8860b; border: 1px solid #d4af37 !important; }
+        .pm-atual-input { color: #205493; border: 1px solid #4a90e2 !important; }
+        .pv-atual-input { color: #a94442; border: 1px solid #d9534f !important; }
 
-        /* Tabela de Armas Dinâmica */
+        /* Tabela Responsiva com Scroll Horizontal no Mobile se necessário */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 8px;
             background: #fdfbf7;
+            min-width: 480px;
         }
         th, td {
             border: 1px solid #b59b6c;
             padding: 6px 8px;
             text-align: left;
-            font-size: 0.85em;
+            font-size: 0.8em;
         }
         th {
             background-color: #7c5a3b;
             color: #fff;
             font-family: 'Cinzel', serif;
-            font-size: 0.8em;
+            font-size: 0.75em;
             letter-spacing: 1px;
         }
         td select {
             margin-bottom: 0;
             padding: 4px;
-            font-size: 0.85em;
+            font-size: 0.8em;
         }
         .btn-acao {
             background: #8b0000;
@@ -587,7 +601,55 @@
             background: #62462e;
         }
 
-        /* Regras de Impressão / PDF Corrigidas */
+        /* --- REGRAS DE RESPONSIVIDADE MOBILE (< 768px) --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            .container {
+                padding: 12px;
+                border-width: 3px;
+                outline-offset: -4px;
+            }
+            .header {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+            .header-text {
+                text-align: center;
+            }
+            h1 {
+                font-size: 1.3em;
+            }
+            .grid-3, .grid-2, .grid-pericias {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .top-action-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                text-align: center;
+            }
+            .top-action-bar > div {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 5px;
+                flex-wrap: wrap;
+            }
+            .recursos {
+                gap: 4px;
+            }
+            .recurso-box {
+                padding: 5px;
+            }
+            .recurso-box span {
+                font-size: 1.1em;
+            }
+        }
+
         @media print {
             @page {
                 size: A4;
@@ -624,7 +686,6 @@
 </head>
 <body>
 
-<!-- Popup de Boas-Vindas / Login -->
 <div class="modal-overlay" id="modal-login">
     <div class="modal-box">
         <h3 style="font-family:'Cinzel',serif; color:#8b0000; margin-top:0;">Portal de Khalmorya</h3>
@@ -634,7 +695,6 @@
     </div>
 </div>
 
-<!-- Menu de Navegação Global (Oculto ao imprimir) -->
 <div class="global-nav">
     <a href="index.html" onclick="sessionStorage.setItem('veio_do_index', 'true')">🏠 Início</a>
     <a href="guia.html" onclick="sessionStorage.setItem('veio_do_index', 'true')">📖 Guia</a>
@@ -657,20 +717,19 @@
         </div>
     </div>
 
-    <!-- Barra de Ações do Topo com Botão de PDF -->
     <div class="top-action-bar">
         <div>
-            <label style="display:inline; margin-right:5px;">Pontos da Campanha:</label>
+            <label style="display:inline; margin-right:2px;">Pontos:</label>
             <input type="number" id="pontos-totais" value="10" min="1" onchange="calcularTudo(event)">
         </div>
         <div class="points-display" id="pontos-restantes">
             Restantes: 10
         </div>
         <div>
-            <button type="button" class="btn-pdf" onclick="salvarFichaNuvem()" style="background:#205493; margin-right:5px;">💾 Salvar Nuvem</button>
-            <button type="button" class="btn-pdf" onclick="baixarBackupFicha()" style="background:#7c5a3b; margin-right:5px;" title="Descarregar cópia de segurança em ficheiro">💾 Backup</button>
-            <button type="button" class="btn-pdf" onclick="deletarFichaNuvem()" style="background:#8b0000; margin-right:5px;" title="Apagar ficha da nuvem">🗑️ Excluir</button>
-            <button type="button" class="btn-pdf" onclick="gerarPDF()">📜 Gerar PDF</button>
+            <button type="button" class="btn-pdf" onclick="salvarFichaNuvem()" style="background:#205493;">💾 Salvar</button>
+            <button type="button" class="btn-pdf" onclick="baixarBackupFicha()" style="background:#7c5a3b;" title="Cópia de segurança">💾 Backup</button>
+            <button type="button" class="btn-pdf" onclick="deletarFichaNuvem()" style="background:#8b0000;" title="Apagar da nuvem">🗑️ Excluir</button>
+            <button type="button" class="btn-pdf" onclick="gerarPDF()">📜 PDF</button>
         </div>
     </div>
 
@@ -680,7 +739,7 @@
             <input type="text" id="nome-heroi" placeholder="Nome do personagem...">
         </div>
         <div>
-            <label>Arquétipo:</label>
+            <label>Arquétipo (Classe):</label>
             <select id="arquetipo">
                 <option value="" disabled selected>Selecione...</option>
                 <option value="paladino">Paladino</option>
@@ -695,12 +754,12 @@
             <label>Raça (Custo):</label>
             <select id="raca" onchange="calcularTudo(event)">
                 <option value="" disabled selected>Selecione...</option>
-                <option value="0">Humano (0 pt) - Ganha +1 ponto extra para atributos ou perícias.</option>
-                <option value="1">Elfo (1 pt) - Sentidos aguçados e forte ligação com a magia e a natureza de Arton.</option>
-                <option value="1">Anão (1 pt) - Vigor inabalável, resistência a rigores e físico robusto.</option>
-                <option value="1">Meio-Orc (1 pt) - Força bruta e instinto de sobrevivência feroz.</option>
-                <option value="1">Minotauro (1 pt) - Poder físico formidável, mas com pavor místico de alturas.</option>
-                <option value="1">Halfling (1 pt) - Pequeno, extremamente ágil, sortudo e especialista em furtividade.</option>
+                <option value="0">Humano (0 pt) - Ganha +1 ponto extra.</option>
+                <option value="1">Elfo (1 pt) - Sentidos aguçados e magia.</option>
+                <option value="1">Anão (1 pt) - Vigor e físico robusto.</option>
+                <option value="1">Meio-Orc (1 pt) - Força bruta e sobrevivência.</option>
+                <option value="1">Minotauro (1 pt) - Poder físico formidável.</option>
+                <option value="1">Halfling (1 pt) - Ágil, sortudo e furtivo.</option>
             </select>
         </div>
     </div>
@@ -727,23 +786,34 @@
         <div class="panel">
             <h2>Recursos</h2>
             <div class="recursos">
+                <!-- PA -->
                 <div class="recurso-box recurso-pa">
                     PA
                     <span id="res-pa">0</span>
                     <small>Ação<br>(Igual ao P)</small>
+                    <div class="recurso-flex">
+                        <small>Atual</small>
+                        <input type="number" id="res-pa-atual" class="recurso-atual-input pa-atual-input" value="0" min="0" title="PA Atual">
+                    </div>
                 </div>
+                <!-- PM -->
                 <div class="recurso-box recurso-pm">
                     PM
                     <span id="res-pm">0</span>
                     <small>Magia<br>(H x 5)</small>
+                    <div class="recurso-flex">
+                        <small>Atual</small>
+                        <input type="number" id="res-pm-atual" class="recurso-atual-input pm-atual-input" value="0" min="0" title="PM Atual">
+                    </div>
                 </div>
+                <!-- PV -->
                 <div class="recurso-box recurso-pv">
                     PV
                     <span id="res-pv">0</span>
                     <small style="margin-top:2px;">Vida<br>(R x 5)</small>
-                    <div class="pv-flex">
+                    <div class="recurso-flex">
                         <small>Atual</small>
-                        <input type="number" id="res-pv-atual" class="pv-atual-input" value="0" title="PV Atual">
+                        <input type="number" id="res-pv-atual" class="recurso-atual-input pv-atual-input" value="0" min="0" title="PV Atual">
                     </div>
                 </div>
             </div>
@@ -752,14 +822,14 @@
 
     <div class="panel">
         <h2>Perícias (1 pt cada)</h2>
-        <p style="font-size:0.75em; color:#554033; margin-bottom: 8px; font-style: italic;">Role +1D de ganho quando realizar testes ligados à perícia que possui.</p>
+        <p style="font-size:0.75em; color:#554033; margin-bottom: 8px; font-style: italic;">Role +1D de ganho quando realizar testes ligados à perícia.</p>
         <div class="checkbox-group grid-pericias" id="pericias">
-            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Luta</strong><span class="desc">Domínio de armas brancas, socos, pontapés e manobras ofensivas ou defensivas em combate direto.</span></div></label>
-            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Percepção</strong><span class="desc">Sentidos alertas para notar emboscadas, armadilhas, pistas ocultas e mentiras.</span></div></label>
-            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Medicina</strong><span class="desc">Capacidade de estabilizar ferimentos graves, tratar enfermidades e fazer curativos de campo.</span></div></label>
-            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Mística</strong><span class="desc">Estudo e compreensão de rituais, entidades arcanas, criaturas mágicas e feitiços.</span></div></label>
-            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Sustento</strong><span class="desc">Habilidade de rastrear presas, caçar, encontrar abrigo e sobreviver em ermos selvagens.</span></div></label>
-            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Influência</strong><span class="desc">Eloqüência para negociar, liderar companheiros, barganhar ou intimidar adversários.</span></div></label>
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Luta</strong><span class="desc">Combate direto e armas brancas.</span></div></label>
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Percepção</strong><span class="desc">Notar emboscadas e armadilhas.</span></div></label>
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Medicina</strong><span class="desc">Estabilizar ferimentos e curativos.</span></div></label>
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Mística</strong><span class="desc">Rituais, feitiços e criaturas.</span></div></label>
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Sustento</strong><span class="desc">Sobrevivência em ermos selvagens.</span></div></label>
+            <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Influência</strong><span class="desc">Negociar, liderar ou intimidar.</span></div></label>
         </div>
     </div>
 
@@ -767,74 +837,75 @@
         <div class="panel">
             <h2>Vantagens (1 pt cada)</h2>
             <div class="checkbox-group" id="vantagens">
-                <label id="lbl-agil"><input type="checkbox" id="v-agil" onchange="calcularTudo(event)"> <div><strong>Ágil</strong><span class="desc">Reflexos fora do comum. Concede bônus em testes ágeis e de esquiva.</span></div></label>
-                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Ataque Esp. (Potente)</strong><span class="desc">Força concentrada. Gasta 1 PM para somar temporariamente +2 de Poder em um ataque.</span></div></label>
-                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Ataque Esp. (Perigoso)</strong><span class="desc">Golpe cirúrgico e letal. Gasta 1 PM para garantir efeitos críticos ampliados.</span></div></label>
-                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Defesa Esp. (Esquiva)</strong><span class="desc">Agilidade defensiva. Gasta 2 PM para usar Habilidade no lugar de Resistência ao defender-se.</span></div></label>
-                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Defesa Esp. (Tenaz)</strong><span class="desc">Postura firme. Gasta 1 PM para receber +2 bônus em sua Defesa no turno.</span></div></label>
-                <label id="lbl-vigoroso"><input type="checkbox" id="v-vigoroso" onchange="calcularTudo(event)"> <div><strong>Vigoroso</strong><span class="desc">Vitalidade impressionante. Concede bônus em saúde e testes de vigor.</span></div></label>
-                <label id="lbl-forte" style="grid-column: span 2;"><input type="checkbox" id="v-forte" onchange="calcularTudo(event)"> <div><strong>Forte</strong><span class="desc">Músculos imponentes. Concede bônus em esforço e testes de força.</span></div></label>
+                <label id="lbl-agil"><input type="checkbox" id="v-agil" onchange="calcularTudo(event)"> <div><strong>Ágil</strong><span class="desc">Reflexos e esquiva superior.</span></div></label>
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Ataque Esp. (Potente)</strong><span class="desc">Gasta 1 PM para +2 de Poder.</span></div></label>
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Ataque Esp. (Perigoso)</strong><span class="desc">Críticos ampliados.</span></div></label>
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Defesa Esp. (Esquiva)</strong><span class="desc">Usa H em vez de R ao defender.</span></div></label>
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Defesa Esp. (Tenaz)</strong><span class="desc">+2 de Defesa no turno.</span></div></label>
+                <label id="lbl-vigoroso"><input type="checkbox" id="v-vigoroso" onchange="calcularTudo(event)"> <div><strong>Vigoroso</strong><span class="desc">Vitalidade impressionante.</span></div></label>
+                <label id="lbl-forte" style="grid-column: span 2;"><input type="checkbox" id="v-forte" onchange="calcularTudo(event)"> <div><strong>Forte</strong><span class="desc">Músculos imponentes e esforço.</span></div></label>
             </div>
         </div>
 
         <div class="panel">
-            <h2>Desvantagens (Ganha +1 pt)</h2>
-            <p style="font-size:0.75em; color:#554033; margin-bottom: 8px; font-style: italic;">Máximo de +2 pontos bônus acumulados.</p>
+            <h2>Desvantagens (+1 pt)</h2>
+            <p style="font-size:0.75em; color:#554033; margin-bottom: 8px; font-style: italic;">Máximo de +2 pontos bônus.</p>
             <div class="checkbox-group" id="desvantagens">
-                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Código dos Heróis</strong><span class="desc">Juramento sagrado: jamais recusar ajuda a quem pede, nunca atacar covardemente e sempre cumprir a palavra.</span></div></label>
-                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Código do Combate</strong><span class="desc">Honra marcial estrita: nunca atacar oponentes caídos, desarmados ou em desvantagem numérica flagrante.</span></div></label>
-                <label id="lbl-atrapalhado"><input type="checkbox" id="d-atrapalhado" onchange="calcularTudo(event)"> <div><strong>Atrapalhado</strong><span class="desc">Falta de coordenação motora crônica. Perde bônus em testes ágeis.</span></div></label>
-                <label id="lbl-fracote"><input type="checkbox" id="d-fracote" onchange="calcularTudo(event)"> <div><strong>Fracote</strong><span class="desc">Estrutura física deficiente para cargas e força bruta.</span></div></label>
-                <label id="lbl-fragil" style="grid-column: span 2;"><input type="checkbox" id="d-fragil" onchange="calcularTudo(event)"> <div><strong>Frágil</strong><span class="desc">Constituição física delicada contra venenos, fadiga e doenças.</span></div></label>
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Código dos Heróis</strong><span class="desc">Jamais recusar ajuda ou quebrar palavra.</span></div></label>
+                <label><input type="checkbox" onchange="calcularTudo(event)"> <div><strong>Código do Combate</strong><span class="desc">Não atacar caídos ou desarmados.</span></div></label>
+                <label id="lbl-atrapalhado"><input type="checkbox" id="d-atrapalhado" onchange="calcularTudo(event)"> <div><strong>Atrapalhado</strong><span class="desc">Perde bônus em testes ágeis.</span></div></label>
+                <label id="lbl-fracote"><input type="checkbox" id="d-fracote" onchange="calcularTudo(event)"> <div><strong>Fracote</strong><span class="desc">Força física deficiente.</span></div></label>
+                <label id="lbl-fragil" style="grid-column: span 2;"><input type="checkbox" id="d-fragil" onchange="calcularTudo(event)"> <div><strong>Frágil</strong><span class="desc">Constituição delicada.</span></div></label>
             </div>
         </div>
     </div>
 
     <div class="panel">
         <h2>Inventário e Armas</h2>
-        <p style="font-size:0.75em; color:#554033; margin-bottom: 8px; font-style: italic;">Adicione abaixo as armas que seu herói carrega (opcional). Os testes de acerto usam d20 e os danos usam d6:</p>
+        <p style="font-size:0.75em; color:#554033; margin-bottom: 8px; font-style: italic;">Adicione abaixo as armas do herói:</p>
         
-        <table id="tabela-armas">
-            <thead>
-                <tr>
-                    <th style="width: 30%;">Arma</th>
-                    <th>Atributo</th>
-                    <th>Teste (d20) / Dano (d6)</th>
-                    <th>Efeito</th>
-                    <th style="width: 45px; text-align: center;">Ação</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Vazio por padrão, jogador adiciona se quiser -->
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table id="tabela-armas">
+                <thead>
+                    <tr>
+                        <th style="width: 28%;">Arma</th>
+                        <th>Atributo</th>
+                        <th>Teste / Dano</th>
+                        <th>Efeito</th>
+                        <th style="width: 40px; text-align: center;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
         <button type="button" class="btn-adicionar" onclick="adicionarArma()">+ Adicionar Arma</button>
         
         <h4 style="margin-top: 15px; font-family:'Cinzel', serif; color:#4a2e18; font-size:0.85em;">Equipamento Padrão:</h4>
         <ul style="margin-top: 3px; font-size:0.85em;">
-            <li><strong>Insígnia dos Servos de Khalmyr</strong>. Roupas de viagem, odre de água e ração de combate.</li>
+            <li><strong>Insígnia dos Servos de Khalmyr</strong>. Roupas de viagem, odre e ração.</li>
         </ul>
     </div>
 
     <div class="panel">
-        <h2>Notas e Histórico do Herói</h2>
-        <textarea id="notas-heroi" placeholder="Anote aqui detalhes sobre a insígnia, respostas às perguntas da campanha, anotações de sessões ou histórico do personagem..."></textarea>
+        <h2>Notas e Histórico</h2>
+        <textarea id="notas-heroi" placeholder="Anote detalhes da campanha, ou histórico..."></textarea>
     </div>
 </div>
 
 <script>
     const dadosArmas = {
-        'espada': { attr: 'Poder (P)', teste: 'd20 + P (Acerto) | 1d6 (Dano)', efeito: 'Padrão e equilibrada.' },
-        'espadalonga': { attr: 'Poder (P)', teste: 'd20 + P (Acerto) | 2d6 (Dano)', efeito: 'Duas mãos. Maior dano.' },
-        'adaga': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 1d6 (Dano)', efeito: 'Rápida e oculta.' },
-        'machado': { attr: 'Poder (P)', teste: 'd20 + P (Acerto) | 2d6 (Dano)', efeito: 'Brutal e focada em força.' },
-        'lanca': { attr: 'P ou H', teste: 'd20 + P/H (Acerto) | 1d6 (Dano)', efeito: 'Permite alcance.' },
-        'arcocurto': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 1d6 (Dano)', efeito: 'Distância padrão.' },
-        'arcolongo': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 2d6 (Dano)', efeito: 'Duas mãos. Longo alcance e maior dano.' },
-        'bestasimples': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 1d6 (Dano)', efeito: 'Uma mão. Disparo rápido.' },
-        'bestapesada': { attr: 'Poder (P)', teste: 'd20 + P (Acerto) | 2d6 (Dano)', efeito: 'Arma de Duas Mãos. Gasta 1 turno recarregando, dano pesado.' },
-        'funda': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 1d6 (Dano)', efeito: 'Distância simples.' },
-        'cajado': { attr: 'Habilidade (H)', teste: 'd20 + H (Acerto) | 1d6 (Dano)', efeito: 'Foco para Magias.' }
+        'espada': { attr: 'Poder (P)', teste: 'd20 + P | 1d6', efeito: 'Padrão e equilibrada.' },
+        'espadalonga': { attr: 'Poder (P)', teste: 'd20 + P | 2d6', efeito: 'Duas mãos. Maior dano.' },
+        'adaga': { attr: 'Habilidade (H)', teste: 'd20 + H | 1d6', efeito: 'Rápida e oculta.' },
+        'machado': { attr: 'Poder (P)', teste: 'd20 + P | 2d6', efeito: 'Brutal e focada em força.' },
+        'lanca': { attr: 'P ou H', teste: 'd20 + P/H | 1d6', efeito: 'Permite alcance.' },
+        'arcocurto': { attr: 'Habilidade (H)', teste: 'd20 + H | 1d6', efeito: 'Distância padrão.' },
+        'arcolongo': { attr: 'Habilidade (H)', teste: 'd20 + H | 2d6', efeito: 'Duas mãos. Longo alcance.' },
+        'bestasimples': { attr: 'Habilidade (H)', teste: 'd20 + H | 1d6', efeito: 'Uma mão. Disparo rápido.' },
+        'bestapesada': { attr: 'Poder (P)', teste: 'd20 + P | 2d6', efeito: 'Duas mãos. Recarrega 1 turno.' },
+        'funda': { attr: 'Habilidade (H)', teste: 'd20 + H | 1d6', efeito: 'Distância simples.' },
+        'cajado': { attr: 'Habilidade (H)', teste: 'd20 + H | 1d6', efeito: 'Foco para Magias.' }
     };
 
     function guardarValor(elemento) {
@@ -943,6 +1014,16 @@
         let pvMax = r * 5;
         document.getElementById('res-pv').innerText = pvMax;
         
+        let paAtualInput = document.getElementById('res-pa-atual');
+        if (!paAtualInput.dataset.manualEdited) {
+            paAtualInput.value = p;
+        }
+
+        let pmAtualInput = document.getElementById('res-pm-atual');
+        if (!pmAtualInput.dataset.manualEdited) {
+            pmAtualInput.value = h * 5;
+        }
+
         let pvAtualInput = document.getElementById('res-pv-atual');
         if (!pvAtualInput.dataset.manualEdited) {
             pvAtualInput.value = pvMax;
@@ -953,8 +1034,28 @@
         }
     }
 
+    document.getElementById('res-pa-atual').addEventListener('input', function() {
+        this.dataset.manualEdited = "true";
+        let max = parseInt(document.getElementById('res-pa').innerText) || 0;
+        let val = parseInt(this.value) || 0;
+        if (val < 0) this.value = 0;
+        if (val > max) this.value = max;
+    });
+
+    document.getElementById('res-pm-atual').addEventListener('input', function() {
+        this.dataset.manualEdited = "true";
+        let max = parseInt(document.getElementById('res-pm').innerText) || 0;
+        let val = parseInt(this.value) || 0;
+        if (val < 0) this.value = 0;
+        if (val > max) this.value = max;
+    });
+
     document.getElementById('res-pv-atual').addEventListener('input', function() {
         this.dataset.manualEdited = "true";
+        let max = parseInt(document.getElementById('res-pv').innerText) || 0;
+        let val = parseInt(this.value) || 0;
+        if (val < 0) this.value = 0;
+        if (val > max) this.value = max;
     });
 
     function atualizarInfoArma(selectElement) {
@@ -987,7 +1088,7 @@
                 </select>
             </td>
             <td class="td-attr">Poder (P)</td>
-            <td class="td-teste">d20 + P (Acerto) | 1d6 (Dano)</td>
+            <td class="td-teste">d20 + P | 1d6</td>
             <td class="td-efeito">Padrão e equilibrada.</td>
             <td style="text-align: center;"><button type="button" class="btn-acao" onclick="removerArma(this)">X</button></td>
         `;

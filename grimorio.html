@@ -6,7 +6,7 @@
     <title>Grimório de Magias - Vila de Khalmorya</title>
     <!-- Fontes Medievais -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
     
     <!-- Firebase SDK -->
     <script type="module">
@@ -40,11 +40,7 @@
                 userMenuArea.innerHTML = `<span style="color:#f4ecd0; font-weight:bold;">👤 ${user.email} (${papel.toUpperCase()})</span> | <button type="button" class="btn-acao" onclick="fazerLogout()" style="padding:2px 6px; font-size:0.7em;">Sair</button>`;
                 
                 if (linkPersonagens) linkPersonagens.style.display = 'inline-block';
-                if (papel === "admin" && linkPainelAdmin) {
-                    linkPainelAdmin.style.display = 'inline-block';
-                } else if (linkPainelAdmin) {
-                    linkPainelAdmin.style.display = 'none';
-                }
+                if (papel === "admin" && linkPainelAdmin) linkPainelAdmin.style.display = 'inline-block';
             } else {
                 userMenuArea.innerHTML = `<button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em; background:#8b0000;">🔑 Logar</button>`;
                 if (linkPainelAdmin) linkPainelAdmin.style.display = 'none';
@@ -60,174 +56,80 @@
             background-image: radial-gradient(#2b1b11, #0d0804);
             color: #2c1810;
             line-height: 1.5;
-            padding: 15px;
+            padding: 10px;
         }
         .container {
             max-width: 950px;
             margin: 0 auto;
             background: #f4ecd0;
             background-image: linear-gradient(to bottom, #f7f1df, #efe2c0);
-            padding: 30px;
+            padding: 20px;
             border-radius: 4px;
             box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 50px rgba(139,69,19,0.15);
             border: 6px solid #4a2e18;
             outline: 2px solid #8c6d46;
-            outline-offset: -10px;
-            position: relative;
+            outline-offset: -8px;
+            box-sizing: border-box;
         }
+        .global-nav {
+            max-width: 950px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8em;
+            flex-wrap: wrap;
+        }
+        .global-nav a {
+            background: #7c5a3b;
+            color: #f4ecd0;
+            padding: 5px 10px;
+            border-radius: 2px;
+            text-decoration: none;
+            border: 1px solid #b59b6c;
+            transition: background 0.2s;
+        }
+        .global-nav a:hover { background: #8b0000; }
+
         .header {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             border-bottom: 3px double #7c5a3b;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
-        }
-        .header img {
-            max-width: 90px;
-            filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4));
-        }
-        .header-text {
-            text-align: left;
-        }
-        h1 {
-            font-family: 'Cinzel', serif;
-            color: #8b0000;
-            font-size: 1.8em;
-            margin: 0;
-            line-height: 1.1;
-        }
-        .subtitle {
-            font-family: 'Cinzel', serif;
-            color: #5c4033;
-            font-size: 0.85em;
-            letter-spacing: 2px;
-            margin-top: 3px;
-        }
-        h2 {
-            font-family: 'Cinzel', serif;
-            color: #4a2e18;
-            font-size: 1.15em;
-            border-bottom: 1px solid #b59b6c;
-            padding-bottom: 4px;
-            margin-top: 25px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        p {
-            margin-bottom: 10px;
-            font-size: 0.95em;
-        }
-        .panel {
-            background: rgba(255, 253, 245, 0.6);
-            border: 1px solid #b59b6c;
-            padding: 15px 20px;
-            border-radius: 3px;
+            padding-bottom: 10px;
             margin-bottom: 15px;
-            box-shadow: inset 0 0 15px rgba(181, 155, 108, 0.2);
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-box {
-            background: #f4ecd0;
-            border: 4px solid #4a2e18;
-            padding: 30px;
-            border-radius: 4px;
             text-align: center;
-            max-width: 400px;
         }
-        .info-efeitos {
-            background: #e2d2aa;
-            border: 1px solid #b59b6c;
-            padding: 10px 15px;
-            border-radius: 3px;
-            margin-bottom: 15px;
-            font-size: 0.85em;
-            color: #4a2e18;
-        }
-        .info-efeitos strong {
-            font-family: 'Cinzel', serif;
-            color: #8b0000;
-        }
-        .top-action-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #e2d2aa;
-            padding: 8px 12px;
-            border: 1px solid #b59b6c;
-            border-radius: 3px;
-            margin-bottom: 20px;
-            font-family: 'Cinzel', serif;
-            font-size: 0.85em;
-        }
-        .btn-acao {
-            background: #8b0000;
-            color: #fff;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 2px;
-            cursor: pointer;
-            font-family: 'Cinzel', serif;
-            font-size: 0.85em;
-            letter-spacing: 1px;
-            text-decoration: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: background 0.2s;
-        }
+        .header img { max-width: 75px; filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.4)); }
+        .header-text { text-align: left; }
+        h1 { font-family: 'Cinzel', serif; color: #8b0000; font-size: 1.5em; margin: 0; line-height: 1.1; }
+        .subtitle { font-family: 'Cinzel', serif; color: #5c4033; font-size: 0.8em; letter-spacing: 2px; margin-top: 3px; }
+        h2 { font-family: 'Cinzel', serif; color: #4a2e18; font-size: 1.1em; border-bottom: 1px solid #b59b6c; padding-bottom: 4px; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        p { margin-bottom: 10px; font-size: 0.9em; }
+        .panel { background: rgba(255, 253, 245, 0.6); border: 1px solid #b59b6c; padding: 12px 15px; border-radius: 3px; margin-bottom: 15px; box-shadow: inset 0 0 15px rgba(181, 155, 108, 0.2); box-sizing: border-box; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; box-sizing: border-box; }
+        .modal-box { background: #f4ecd0; border: 4px solid #4a2e18; padding: 20px; border-radius: 4px; text-align: center; max-width: 400px; width: 100%; }
+        .info-efeitos { background: #e2d2aa; border: 1px solid #b59b6c; padding: 10px; border-radius: 3px; margin-bottom: 15px; font-size: 0.85em; color: #4a2e18; }
+        .info-efeitos strong { font-family: 'Cinzel', serif; color: #8b0000; }
+        .top-action-bar { display: flex; justify-content: space-between; align-items: center; background: #e2d2aa; padding: 8px 12px; border: 1px solid #b59b6c; border-radius: 3px; margin-bottom: 15px; font-family: 'Cinzel', serif; font-size: 0.8em; gap: 8px; flex-wrap: wrap; }
+        .btn-acao { background: #8b0000; color: #fff; border: none; padding: 5px 10px; border-radius: 2px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.8em; text-decoration: none; }
         .btn-acao:hover { background: #a00; }
-        .grid-magias {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 15px;
-        }
-        .magia-item {
-            background: #fdfbf7;
-            border: 1px solid #b59b6c;
-            padding: 12px;
-            border-radius: 3px;
-            font-size: 0.85em;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .magia-item strong {
-            color: #8b0000;
-            font-family: 'Cinzel', serif;
-            font-size: 1.05em;
-        }
-        .magia-item em {
-            color: #5c4033;
-        }
-        .badge-paladino {
-            display: inline-block;
-            background: #d4af37;
-            color: #2c1810;
-            font-size: 0.7em;
-            font-family: 'Cinzel', serif;
-            padding: 1px 5px;
-            border-radius: 2px;
-            font-weight: bold;
-            margin-left: 5px;
-        }
-        .badge-mago {
-            display: inline-block;
-            background: #4a90e2;
-            color: #fff;
-            font-size: 0.7em;
-            font-family: 'Cinzel', serif;
-            padding: 1px 5px;
-            border-radius: 2px;
-            font-weight: bold;
-            margin-left: 5px;
+        .grid-magias { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+        .magia-item { background: #fdfbf7; border: 1px solid #b59b6c; padding: 10px; border-radius: 3px; font-size: 0.8em; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .magia-item strong { color: #8b0000; font-family: 'Cinzel', serif; font-size: 1em; }
+        .magia-item em { color: #5c4033; }
+        .badge-paladino { display: inline-block; background: #d4af37; color: #2c1810; font-size: 0.65em; font-family: 'Cinzel', serif; padding: 1px 4px; border-radius: 2px; font-weight: bold; margin-left: 4px; }
+        .badge-mago { display: inline-block; background: #4a90e2; color: #fff; font-size: 0.65em; font-family: 'Cinzel', serif; padding: 1px 4px; border-radius: 2px; font-weight: bold; margin-left: 4px; }
+
+        @media (max-width: 768px) {
+            .container { padding: 12px; border-width: 3px; outline-offset: -4px; }
+            .header { flex-direction: column; text-align: center; }
+            .header-text { text-align: center; }
+            .grid-magias { grid-template-columns: 1fr; }
+            .top-action-bar { flex-direction: column; text-align: center; gap: 8px; }
         }
     </style>
 </head>
@@ -242,16 +144,15 @@
     </div>
 </div>
 
-<!-- Menu de Navegação Global -->
-<div style="max-width: 950px; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 0.85em; flex-wrap: wrap;">
-    <a href="index.html" style="background: #4a2e18; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🏠 Início</a>
-    <a href="guia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📖 Guia</a>
-    <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🛡️ Ficha</a>
-    <a href="grimorio.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">✨ Magias</a>
-    <a href="historia.html" style="background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">🗺️ História & Mapa</a>
-    <a href="personagens.html" id="link-personagens" style="display:none; background: #7c5a3b; color: #f4ecd0; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">📜 Personagens</a>
-    <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff; padding: 6px 12px; border-radius: 2px; text-decoration: none; border: 1px solid #b59b6c;">⚙️ Painel Admin</a>
-    <div id="user-menu-area" style="display:inline-block; margin-left: 10px;">
+<div class="global-nav">
+    <a href="index.html">🏠 Início</a>
+    <a href="guia.html">📖 Guia</a>
+    <a href="ficha.html" onclick="sessionStorage.setItem('veio_do_index', 'true')">🛡️ Ficha</a>
+    <a href="grimorio.html" style="background:#4a2e18;">✨ Magias</a>
+    <a href="historia.html">🗺️ História & Mapa</a>
+    <a href="personagens.html" id="link-personagens" style="display:none;">📜 Personagens</a>
+    <a href="painel.html" id="link-painel-admin" style="display:none; background: #8b0000; color: #fff;">⚙️ Painel Admin</a>
+    <div id="user-menu-area" style="display:inline-block; margin-left: 5px;">
         <button type="button" class="btn-acao" onclick="abrirModalLogin()" style="padding:3px 8px; font-size:0.8em;">🔑 Logar</button>
     </div>
 </div>
@@ -280,85 +181,62 @@
         
         <div class="info-efeitos">
             <strong>💡 Guia Rápido de Efeitos:</strong><br>
-            • <strong>Utilidade:</strong> Focado em exploração e investigação. Resolve problemas práticos do cenário.<br>
+            • <strong>Cura:</strong> Focado em restaurar <strong style="font-weight: bold; color: #000000;">PV</strong>.<br>
+            • <strong>Utilidade:</strong> Focado em exploração e investigação.<br>
             • <strong>Suporte / Controle:</strong> Focado em ajudar aliados ou atrapalhar inimigos.
         </div>
 
-        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em; margin-top:20px;">Magias Simples (Disponíveis para Conjuradores e Paladinos)</h3>
+        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:0.95em; margin-top:15px;">Magias Simples (Paladinos e Magos)</h3>
         <div class="grid-magias">
             <div class="magia-item">
-                <strong>✨ Cura Simples</strong> (Custo: 1 PM)<span class="badge-paladino">Paladino / Mago</span><br>
-                <em>Teste:</em> d20 + H | <em>Efeito:</em> 1d6 (Cura)<br>
-                Canaliza energia leve para recuperar uma pequena quantidade de PV de um aliado tocado.
+                <strong>✨ Cura Simples</strong> (1 PM)<span class="badge-paladino">Paladino / Mago</span><br>
+                <em>Teste:</em> d20 + H | <em>Efeito:</em> 1d6 (Cura)
             </div>
             <div class="magia-item">
-                <strong>🛡️ Escudo Simples</strong> (Custo: 1 PM)<span class="badge-paladino">Paladino / Mago</span><br>
-                <em>Teste:</em> d20 + H | <em>Efeito:</em> +2 Defesa (Suporte)<br>
-                Cria barreira protetora rápida.
+                <strong>🛡️ Escudo Simples</strong> (1 PM)<span class="badge-paladino">Paladino / Mago</span><br>
+                <em>Teste:</em> d20 + H | <em>Efeito:</em> +2 Defesa
             </div>
             <div class="magia-item">
-                <strong>💡 Luz Mística</strong> (Custo: 1 PM)<span class="badge-paladino">Paladino / Mago</span><br>
-                <em>Teste:</em> d20 + H | <em>Efeito:</em> Utilidade<br>
-                Faz um objeto brilhar como uma tocha mágica por até uma hora.
+                <strong>💡 Luz Mística</strong> (1 PM)<span class="badge-paladino">Paladino / Mago</span><br>
+                <em>Teste:</em> d20 + H | <em>Efeito:</em> Utilidade
             </div>
             <div class="magia-item">
-                <strong>⚖️ Bênção Menor</strong> (Custo: 1 PM)<span class="badge-paladino">Paladino / Mago</span><br>
-                <em>Teste:</em> d20 + H | <em>Efeito:</em> Suporte<br>
-                Concede um leve alento e bônus espiritual em testes imediatos.
+                <strong>⚖️ Bênção Menor</strong> (1 PM)<span class="badge-paladino">Paladino / Mago</span><br>
+                <em>Teste:</em> d20 + H | <em>Efeito:</em> Suporte
             </div>
         </div>
 
-        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:1em; margin-top:25px;">Magias Avançadas e Complexas (Exclusivas de Magos)</h3>
+        <h3 style="font-family:'Cinzel', serif; color:#8b0000; font-size:0.95em; margin-top:20px;">Magias Avançadas (Exclusivas de Magos)</h3>
         <div class="grid-magias">
             <div class="magia-item">
-                <strong>✨ Cura Completa / Maior</strong> (Custo: 3 PM)<span class="badge-mago">Exclusivo Mago</span><br>
-                <em>Teste:</em> d20 + H | <em>Efeito:</em> 3d6 (Cura)<br>
-                Rituais profundos de restauração.
+                <strong>✨ Cura Completa</strong> (3 PM)<span class="badge-mago">Mago</span><br><em>Teste:</em> d20 + H | <em>Efeito:</em> 3d6 (Cura)
             </div>
             <div class="magia-item">
-                <strong>🛡️ Campo de Força Absoluto</strong> (Custo: 3 PM)<span class="badge-mago">Exclusivo Mago</span><br>
-                <em>Teste:</em> d20 + H | <em>Efeito:</em> +4 Defesa (Suporte)<br>
-                Ergue cúpula arcana impenetrável.
+                <strong>🛡️ Campo de Força</strong> (3 PM)<span class="badge-mago">Mago</span><br><em>Teste:</em> d20 + H | <em>Efeito:</em> +4 Defesa
             </div>
             <div class="magia-item">
-                <strong>🔥 Bola de Fogo</strong> (Custo: 2 PM)<span class="badge-mago">Exclusivo Mago</span><br>
-                <em>Teste:</em> d20 + H (Acerto) | <em>Dano:</em> 2d6 (Fogo)<br>
-                Conjura chamas intensas à distância.
+                <strong>🔥 Bola de Fogo</strong> (2 PM)<span class="badge-mago">Mago</span><br><em>Teste:</em> d20 + H | <em>Dano:</em> 2d6 (Fogo)
             </div>
             <div class="magia-item">
-                <strong>❄️ Raio de Gelo</strong> (Custo: 2 PM)<span class="badge-mago">Exclusivo Mago</span><br>
-                <em>Teste:</em> d20 + H (Acerto) | <em>Dano:</em> 1d6 (Frio)<br>
-                Dispara feixe congelante.
+                <strong>❄️ Raio de Gelo</strong> (2 PM)<span class="badge-mago">Mago</span><br><em>Teste:</em> d20 + H | <em>Dano:</em> 1d6 (Frio)
             </div>
             <div class="magia-item">
-                <strong>⚡ Relâmpago</strong> (Custo: 3 PM)<span class="badge-mago">Exclusivo Mago</span><br>
-                <em>Teste:</em> d20 + H (Acerto) | <em>Dano:</em> 3d6 (Eletricidade)<br>
-                Descarga elétrica veloz.
+                <strong>⚡ Relâmpago</strong> (3 PM)<span class="badge-mago">Mago</span><br><em>Teste:</em> d20 + H | <em>Dano:</em> 3d6 (Raio)
             </div>
             <div class="magia-item">
-                <strong>👁️ Visão Arcana Avançada</strong> (Custo: 2 PM)<span class="badge-mago">Exclusivo Mago</span><br>
-                <em>Teste:</em> d20 + H | <em>Efeito:</em> Utilidade<br>
-                Revela o invisível e ilusões.
+                <strong>👁️ Visão Arcana</strong> (2 PM)<span class="badge-mago">Mago</span><br><em>Teste:</em> d20 + H | <em>Efeito:</em> Utilidade
             </div>
             <div class="magia-item">
-                <strong>💨 Invisibilidade Maior</strong> (Custo: 3 PM)<span class="badge-mago">Exclusivo Mago</span><br>
-                <em>Teste:</em> d20 + H | <em>Efeito:</em> Suporte<br>
-                Some completamente da visão.
+                <strong>💨 Invisibilidade</strong> (3 PM)<span class="badge-mago">Mago</span><br><em>Teste:</em> d20 + H | <em>Efeito:</em> Suporte
             </div>
             <div class="magia-item">
-                <strong>💤 Sono Místico Profundo</strong> (Custo: 2 PM)<span class="badge-mago">Exclusivo Mago</span><br>
-                <em>Teste:</em> d20 + H (Acerto) | <em>Efeito:</em> Controle<br>
-                Induz alvos a torpor profundo.
+                <strong>💤 Sono Místico</strong> (2 PM)<span class="badge-mago">Mago</span><br><em>Teste:</em> d20 + H | <em>Efeito:</em> Controle
             </div>
             <div class="magia-item">
-                <strong>🦅 Voo Arcano</strong> (Custo: 2 PM)<span class="badge-mago">Exclusivo Mago</span><br>
-                <em>Teste:</em> d20 + H | <em>Efeito:</em> Utilidade / Movimento<br>
-                Permite levitação e voo controlado.
+                <strong>🦅 Voo Arcano</strong> (2 PM)<span class="badge-mago">Mago</span><br><em>Teste:</em> d20 + H | <em>Efeito:</em> Movimento
             </div>
             <div class="magia-item">
-                <strong>🔥 Muralha de Fogo Elemental</strong> (Custo: 3 PM)<span class="badge-mago">Exclusivo Mago</span><br>
-                <em>Teste:</em> d20 + H | <em>Dano:</em> 2d6 (Fogo) / Controle<br>
-                Barreira de chamas indomáveis.
+                <strong>🔥 Muralha de Fogo</strong> (3 PM)<span class="badge-mago">Mago</span><br><em>Teste:</em> d20 + H | <em>Dano:</em> 2d6 (Fogo)
             </div>
         </div>
     </div>
