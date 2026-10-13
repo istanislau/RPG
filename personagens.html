@@ -11,7 +11,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { collection, getDocs, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { collection, getDocs, doc, getDoc, setDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { auth, db } from "./firebase-config.js";
 
         onAuthStateChanged(auth, async (user) => {
@@ -20,7 +20,13 @@
                 let userSnap = await getDoc(doc(db, "usuarios", user.uid));
                 let papel = userSnap.exists() ? userSnap.data().papel : "jogador";
 
-                const querySnapshot = await getDocs(collection(db, "fichas"));
+                let qFichas;
+                if (papel === "admin" || papel === "mestre") {
+                    qFichas = collection(db, "fichas");
+                } else {
+                    qFichas = query(collection(db, "fichas"), where("uid", "==", user.uid));
+                }
+                const querySnapshot = await getDocs(qFichas);
                 if (querySnapshot.empty) {
                     listaDiv.innerHTML = "<p>Ainda não existem heróis registados na nuvem.</p>";
                     return;
